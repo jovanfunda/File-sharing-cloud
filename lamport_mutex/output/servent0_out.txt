@@ -1,0 +1,40 @@
+14:57:27 - Starting servent [0|localhost|1500]
+14:57:27 - Pausing for 1000 ms
+14:57:28 - Trying to get lock...
+14:57:28 - Sending message [0|0|0|LAMPORT_REQUEST|1]
+14:57:28 - Sending message [0|1|0|LAMPORT_REQUEST|2]
+14:57:28 - Sending message [0|2|0|LAMPORT_REQUEST|3]
+14:57:28 - Sending message [0|3|0|LAMPORT_REQUEST|4]
+14:57:29 - Got message [3|0|3|LAMPORT_REPLY|0]
+14:57:29 - Got message [4|0|4|LAMPORT_REPLY|0]
+14:57:29 - Got message [1|0|1|LAMPORT_REPLY|0]
+14:57:29 - Got message [2|0|2|LAMPORT_REPLY|0]
+14:57:29 - Got lock!
+14:57:29 - Pausing for 4000 ms
+14:57:29 - Got message [1|1|1|LAMPORT_REQUEST|0]
+14:57:29 - Sending message [0|4|4|LAMPORT_REPLY|1]
+14:57:33 - Unlocking...
+14:57:33 - Sending message [0|7|4|LAMPORT_RELEASE|3]
+14:57:33 - Sending message [0|8|4|LAMPORT_RELEASE|4]
+14:57:33 - Sending message [0|6|4|LAMPORT_RELEASE|2]
+14:57:33 - Sending message [0|5|4|LAMPORT_RELEASE|1]
+14:57:33 - Pausing for 3000 ms
+14:57:36 - Trying to get lock...
+14:57:36 - Sending message [0|9|4|LAMPORT_REQUEST|1]
+14:57:36 - Sending message [0|10|4|LAMPORT_REQUEST|2]
+14:57:36 - Sending message [0|11|4|LAMPORT_REQUEST|3]
+14:57:36 - Got message [2|2|5|LAMPORT_REPLY|0]
+14:57:36 - Got message [1|5|4|LAMPORT_REPLY|0]
+14:57:36 - Sending message [0|12|6|LAMPORT_REQUEST|4]
+14:57:36 - Got message [3|2|5|LAMPORT_REPLY|0]
+14:57:36 - Got message [4|2|7|LAMPORT_REPLY|0]
+14:57:38 - Got message [1|6|4|LAMPORT_RELEASE|0]
+14:57:38 - Got lock!
+14:57:38 - Pausing for 2000 ms
+14:57:40 - Unlocking...
+14:57:40 - Sending message [0|16|8|LAMPORT_RELEASE|4]
+14:57:40 - Sending message [0|13|8|LAMPORT_RELEASE|1]
+14:57:40 - Sending message [0|14|8|LAMPORT_RELEASE|2]
+14:57:40 - Sending message [0|15|8|LAMPORT_RELEASE|3]
+14:57:40 - Pausing for 9000 ms
+14:57:49 - Stopping...
