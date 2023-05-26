@@ -46,6 +46,10 @@ public class ServentInfo implements Serializable {
 	public void addNeighbor(int serventId) {
 		neighbors.add(serventId);
 	}
+
+	public void remoteNeighbor(int serventId) {
+		neighbors.remove(serventId);
+	}
 	
 	@Override
 	public String toString() {

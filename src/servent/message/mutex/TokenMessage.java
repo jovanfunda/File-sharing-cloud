@@ -4,9 +4,11 @@ import app.ServentInfo;
 import servent.message.BasicMessage;
 import servent.message.MessageType;
 
+import java.util.Queue;
+
 public class TokenMessage extends BasicMessage {
 
-	private static final long serialVersionUID = 2084490973699262440L;
+	private Queue<ServentInfo> serventsWaiting;
 
 	public TokenMessage(ServentInfo sender, ServentInfo receiver) {
 		super(MessageType.TOKEN, sender, receiver);

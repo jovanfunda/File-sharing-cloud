@@ -2,7 +2,9 @@ package servent.handler;
 
 import app.AppConfig;
 import app.ServentInfo;
-import servent.message.HelloToNodeMessage;
+import mutex.DistributedMutex;
+import mutex.SuzukiMutex;
+import servent.message.hello.HelloToNodeMessage;
 import servent.message.Message;
 import servent.message.MessageType;
 import servent.message.bootstrap.HelloFromBootstrapMessage;
@@ -12,8 +14,11 @@ public class HelloFromBootstrapHandler implements MessageHandler {
 
     private Message clientMessage;
 
-    public HelloFromBootstrapHandler(Message clientMessage) {
+    private DistributedMutex mutex;
+
+    public HelloFromBootstrapHandler(Message clientMessage, DistributedMutex mutex) {
         this.clientMessage = clientMessage;
+        this.mutex = mutex;
     }
 
     @Override
@@ -24,10 +29,16 @@ public class HelloFromBootstrapHandler implements MessageHandler {
 
             if(iShouldMessage == null) {
 
+                ((SuzukiMutex)mutex).setTokenActive(true);
+
+                mutex.lock();
+
                 AppConfig.myServentInfo.setId(0);
                 AppConfig.addServentInfo(AppConfig.myServentInfo);
 
                 AppConfig.timestampedStandardPrint("Primljen sam u arhitekturu kao prvi cvor!");
+
+                mutex.unlock();
 
             } else {
                 MessageUtil.sendMessage(new HelloToNodeMessage(AppConfig.myServentInfo, iShouldMessage));

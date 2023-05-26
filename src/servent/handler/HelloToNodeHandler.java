@@ -1,7 +1,7 @@
 package servent.handler;
 
 import app.AppConfig;
-import servent.message.HelloFromNodeMessage;
+import servent.message.hello.HelloFromNodeMessage;
 import servent.message.Message;
 import servent.message.MessageType;
 import servent.message.util.MessageUtil;

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import cli.CLIParser;
 import mutex.DistributedMutex;
+import mutex.SuzukiMutex;
 import servent.SimpleServentListener;
 
 /**
@@ -37,22 +38,9 @@ public class ServentMain {
 
 		AppConfig.myServentInfo = new ServentInfo(ipAddress, -1, portNumber, new ArrayList<>());
 
-		DistributedMutex mutex = null;
+		DistributedMutex mutex = new SuzukiMutex();
 		
-//		switch (AppConfig.MUTEX_TYPE) {
-//			case TOKEN:
-//				mutex = new TokenMutex();
-//				break;
-//			case LAMPORT:
-//				mutex = new LamportMutex();
-//				break;
-//		default:
-//			mutex = null;
-//			AppConfig.timestampedErrorPrint("Unknown mutex type in config.");
-//			break;
-//		}
-		
-		SimpleServentListener simpleListener = new SimpleServentListener(portNumber);
+		SimpleServentListener simpleListener = new SimpleServentListener(portNumber, mutex);
 		Thread listenerThread = new Thread(simpleListener);
 		listenerThread.start();
 		

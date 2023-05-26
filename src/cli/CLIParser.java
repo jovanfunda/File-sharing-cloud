@@ -7,9 +7,6 @@ import java.util.Scanner;
 import app.AppConfig;
 import app.Cancellable;
 import cli.command.*;
-import cli.command.mutex.DistributedLockCommand;
-import cli.command.mutex.DistributedUnlockCommand;
-import cli.command.mutex.InitTokenMutexCommand;
 import mutex.DistributedMutex;
 import servent.SimpleServentListener;
 
@@ -40,11 +37,8 @@ public class CLIParser implements Runnable, Cancellable {
 	public CLIParser(SimpleServentListener listener, DistributedMutex mutex) {
 		this.commandList = new ArrayList<>();
 		
-		commandList.add(new InfoCommand());
+		commandList.add(new InfoCommand(mutex));
 		commandList.add(new PauseCommand());
-		commandList.add(new DistributedLockCommand(mutex));
-		commandList.add(new DistributedUnlockCommand(mutex));
-		commandList.add(new InitTokenMutexCommand(mutex));
 		commandList.add(new StopCommand(this, listener));
 		commandList.add(new FirstCommand());
 	}
@@ -88,6 +82,5 @@ public class CLIParser implements Runnable, Cancellable {
 	@Override
 	public void stop() {
 		this.working = false;
-		
 	}
 }

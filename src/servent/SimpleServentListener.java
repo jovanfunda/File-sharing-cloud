@@ -11,6 +11,8 @@ import app.AppConfig;
 import app.Cancellable;
 import mutex.DistributedMutex;
 import servent.handler.*;
+import servent.handler.mutex.TokenHandler;
+import servent.handler.mutex.RequestTokenHandler;
 import servent.message.Message;
 import servent.message.util.MessageUtil;
 
@@ -21,7 +23,7 @@ public class SimpleServentListener implements Runnable, Cancellable {
 	private DistributedMutex mutex;
 	private int portNumber;
 
-	public SimpleServentListener(int portNumber) {
+	public SimpleServentListener(int portNumber, DistributedMutex mutex) {
 		this.mutex = mutex;
 		this.portNumber = portNumber;
 	}
@@ -56,28 +58,25 @@ public class SimpleServentListener implements Runnable, Cancellable {
 
 				switch (clientMessage.getMessageType()) {
 					case HELLO_FROM_BOOTSTRAP:
-						messageHandler = new HelloFromBootstrapHandler(clientMessage);
+						messageHandler = new HelloFromBootstrapHandler(clientMessage, mutex);
 						break;
 					case HELLO_TO_NODE:
 						messageHandler = new HelloToNodeHandler(clientMessage);
 						break;
 					case HELLO_FROM_NODE:
-						messageHandler = new HelloFromNodeHandler(clientMessage);
+						messageHandler = new HelloFromNodeHandler(clientMessage, mutex);
 						break;
-//				case TOKEN:
-//					messageHandler = new TokenHandler(clientMessage, mutex);
-//					break;
-//					case LAMPORT_REQUEST:
-//						messageHandler = new LamportRequestHandler(clientMessage,mutex);
-//						break;
-//					case LAMPORT_RELEASE:
-//						messageHandler = new LamportReleaseHandler(clientMessage, mutex);
-//						break;
-//					case LAMPORT_REPLY:
-//						messageHandler = new LamportReplyHandler(clientMessage, mutex);
-//						break;
-//				case POISON:
-//					break;
+					case REQUEST_TOKEN:
+						messageHandler = new RequestTokenHandler(clientMessage, mutex);
+						break;
+					case TOKEN:
+						messageHandler = new TokenHandler(clientMessage, mutex);
+						break;
+					case UPDATE_SYSTEM:
+						messageHandler = new UpdateSystemHandler(clientMessage);
+						break;
+					case SYSTEM_UPDATED:
+						messageHandler = new SystemUpdatedHandler(clientMessage, mutex);
 				}
 				
 				threadPool.submit(messageHandler);

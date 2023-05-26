@@ -7,6 +7,7 @@ import java.net.Socket;
 import app.AppConfig;
 import app.ServentInfo;
 import servent.message.Message;
+import servent.message.MessageType;
 
 /**
  * This worker sends a message asynchronously. Doing this in a separate thread
@@ -30,25 +31,50 @@ public class DelayedMessageSender implements Runnable {
 		} catch (InterruptedException e1) {
 			e1.printStackTrace();
 		}
-		
+
 		ServentInfo receiverInfo = messageToSend.getReceiverInfo();
-		
-		if (MessageUtil.MESSAGE_UTIL_PRINTING) {
-			AppConfig.timestampedStandardPrint("Sending message " + messageToSend);
-		}
-		
+
 		try {
-			Socket sendSocket = new Socket(receiverInfo.getIpAddress(), receiverInfo.getListenerPort());
-			
-			ObjectOutputStream oos = new ObjectOutputStream(sendSocket.getOutputStream());
-			oos.writeObject(messageToSend);
-			oos.flush();
-			
-			sendSocket.close();
-			
+
+			if(messageToSend.getReceiverInfo().getId() == -1 || messageToSend.getOriginalSenderInfo().getId() == -1) {
+
+				AppConfig.timestampedStandardPrint("Saljem poruku " + messageToSend + " van arhitekture");
+				Socket sendSocket = new Socket(receiverInfo.getIpAddress(), receiverInfo.getListenerPort());
+
+				ObjectOutputStream oos = new ObjectOutputStream(sendSocket.getOutputStream());
+				oos.writeObject(messageToSend);
+				oos.flush();
+
+				sendSocket.close();
+
+			} else if(AppConfig.myServentInfo.getNeighbors().contains(receiverInfo.getId())) {
+
+				AppConfig.timestampedStandardPrint("Saljem poruku " + messageToSend + " ka komsiji " + receiverInfo);
+				Socket sendSocket = new Socket(receiverInfo.getIpAddress(), receiverInfo.getListenerPort());
+
+				ObjectOutputStream oos = new ObjectOutputStream(sendSocket.getOutputStream());
+				oos.writeObject(messageToSend);
+				oos.flush();
+
+				sendSocket.close();
+
+			} else {
+
+				for(Integer neighbor : AppConfig.myServentInfo.getNeighbors()) {
+
+					AppConfig.timestampedStandardPrint("Saljem poruku " + messageToSend + " ka " + neighbor + ", jer mi " + messageToSend.getReceiverInfo().getId() + " nije komsija");
+					Socket sendSocket = new Socket(AppConfig.getInfoById(neighbor).getIpAddress(), AppConfig.getInfoById(neighbor).getListenerPort());
+
+					ObjectOutputStream oos = new ObjectOutputStream(sendSocket.getOutputStream());
+					oos.writeObject(messageToSend);
+
+					oos.flush();
+
+					sendSocket.close();
+				}
+			}
 		} catch (IOException e) {
 			AppConfig.timestampedErrorPrint("Couldn't send message: " + messageToSend);
 		}
 	}
-	
 }

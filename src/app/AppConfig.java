@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import mutex.MutexType;
-
 /**
  * This class contains all the global application configuration stuff.
  * @author bmilojkovic
@@ -23,11 +21,6 @@ public class AppConfig {
 	private static List<ServentInfo> serventInfoList = new ArrayList<>();
 
 	private static ServentInfo bootstrapNode = new ServentInfo("localhost", -1, 1000, new ArrayList<>());
-
-	/**
-	 * Type of mutex implementation in out system.
-	 */
-	public static MutexType MUTEX_TYPE = MutexType.NONE;
 	
 	/**
 	 * Print a message to stdout with a timestamp

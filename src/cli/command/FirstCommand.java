@@ -1,7 +1,7 @@
 package cli.command;
 
 import app.AppConfig;
-import servent.message.HelloToBootstrapMessage;
+import servent.message.hello.HelloToBootstrapMessage;
 import servent.message.util.MessageUtil;
 
 public class FirstCommand implements CLICommand {
