@@ -18,7 +18,7 @@ public class AppConfig {
 	 */
 	public static ServentInfo myServentInfo;
 	
-	private static List<ServentInfo> serventInfoList = new ArrayList<>();
+	public static List<ServentInfo> serventInfoList = new ArrayList<>();
 
 	private static ServentInfo bootstrapNode = new ServentInfo("localhost", -1, 1000, new ArrayList<>());
 	
@@ -54,7 +54,12 @@ public class AppConfig {
 			throw new IllegalArgumentException(
 					"Trying to get info for servent " + id + " when there are " + getServentCount() + " servents.");
 		}
-		return serventInfoList.get(id);
+		for(ServentInfo s : serventInfoList) {
+			if(s.getId() == id) {
+				return s;
+			}
+		}
+		return null;
 	}
 	
 	/**
@@ -70,6 +75,10 @@ public class AppConfig {
 
 	public static List<ServentInfo> getServentInfoList() {
 		return serventInfoList;
+	}
+
+	public static List<ServentInfo> copyOfServentInfoList() {
+		return new ArrayList<>(serventInfoList);
 	}
 
 	public static ServentInfo getBootstrapNode() {

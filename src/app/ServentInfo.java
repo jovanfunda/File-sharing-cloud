@@ -47,7 +47,7 @@ public class ServentInfo implements Serializable {
 		neighbors.add(serventId);
 	}
 
-	public void remoteNeighbor(int serventId) {
+	public void removeNeighbor(int serventId) {
 		neighbors.remove(serventId);
 	}
 	
@@ -55,4 +55,5 @@ public class ServentInfo implements Serializable {
 	public String toString() {
 		return "[" + id + "|" + ipAddress + "|" + listenerPort + "]";
 	}
+
 }

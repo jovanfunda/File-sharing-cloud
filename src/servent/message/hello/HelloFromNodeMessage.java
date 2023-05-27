@@ -13,7 +13,7 @@ public class HelloFromNodeMessage extends BasicMessage {
 
     public HelloFromNodeMessage(ServentInfo originalSenderInfo, ServentInfo receiverInfo) {
         super(MessageType.HELLO_FROM_NODE, originalSenderInfo, receiverInfo);
-        this.activeServents = AppConfig.getServentInfoList();
+        this.activeServents = AppConfig.copyOfServentInfoList();
     }
 
     public List<ServentInfo> getActiveServents() {

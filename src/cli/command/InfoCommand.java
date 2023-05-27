@@ -20,14 +20,15 @@ public class InfoCommand implements CLICommand {
 	@Override
 	public void execute(String args) {
 		AppConfig.timestampedStandardPrint("My info: " + AppConfig.myServentInfo);
-		AppConfig.timestampedStandardPrint("Neighbors:");
-		AppConfig.timestampedStandardPrint("Token: " + ((SuzukiMutex) mutex).hasToken());
-		String neighbors = "";
+
+		StringBuilder neighbors = new StringBuilder();
 		for (Integer neighbor : AppConfig.myServentInfo.getNeighbors()) {
-			neighbors += neighbor + " ";
+			neighbors.append(neighbor).append(" ");
 		}
-		
-		AppConfig.timestampedStandardPrint(neighbors);
+		AppConfig.timestampedStandardPrint("Neighbors:" + neighbors);
+
+		AppConfig.timestampedStandardPrint("Token: " + ((SuzukiMutex) mutex).hasToken());
+
 	}
 
 }

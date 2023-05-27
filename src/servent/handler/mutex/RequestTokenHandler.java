@@ -10,7 +10,7 @@ import servent.message.util.MessageUtil;
 
 public class RequestTokenHandler implements MessageHandler {
 
-    private final Message clientMessage;
+    private Message clientMessage;
     private final SuzukiMutex mutex;
 
     public RequestTokenHandler(Message clientMessage, DistributedMutex mutex){
@@ -33,7 +33,7 @@ public class RequestTokenHandler implements MessageHandler {
             MessageUtil.sendMessage(new TokenMessage(AppConfig.myServentInfo, clientMessage.getOriginalSenderInfo()));
         } else {
             for(Integer neighbor: AppConfig.myServentInfo.getNeighbors()) {
-                clientMessage.changeReceiver(neighbor);
+                clientMessage = clientMessage.changeReceiver(neighbor);
                 MessageUtil.sendMessage(clientMessage);
             }
         }

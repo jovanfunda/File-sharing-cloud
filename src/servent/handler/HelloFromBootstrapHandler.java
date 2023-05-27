@@ -42,6 +42,7 @@ public class HelloFromBootstrapHandler implements MessageHandler {
 
             } else {
                 MessageUtil.sendMessage(new HelloToNodeMessage(AppConfig.myServentInfo, iShouldMessage));
+                AppConfig.timestampedStandardPrint("Javljam se cvoru sa ID i portom " + iShouldMessage.getId() + " - " + iShouldMessage.getListenerPort());
             }
         }
     }

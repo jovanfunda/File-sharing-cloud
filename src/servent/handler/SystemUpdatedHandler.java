@@ -8,8 +8,8 @@ import servent.message.MessageType;
 
 public class SystemUpdatedHandler implements MessageHandler {
 
-    private Message clientMessage;
-    private DistributedMutex mutex;
+    private final Message clientMessage;
+    private final DistributedMutex mutex;
 
     public SystemUpdatedHandler(Message clientMessage, DistributedMutex mutex) {
         this.clientMessage = clientMessage;
@@ -19,8 +19,8 @@ public class SystemUpdatedHandler implements MessageHandler {
     @Override
     public void run() {
         if(clientMessage.getMessageType() == MessageType.SYSTEM_UPDATED) {
-            if(clientMessage.getReceiverInfo() == AppConfig.myServentInfo) {
-                ((SuzukiMutex) mutex).messagesReceived.addAndGet(1);
+            if(clientMessage.getReceiverInfo().getId() == AppConfig.myServentInfo.getId()) {
+                AppConfig.timestampedStandardPrint("MessageReceived u SysUpdatedHandler " + ((SuzukiMutex) mutex).messagesReceived.addAndGet(1));
             }
         } else {
             AppConfig.timestampedErrorPrint("Got message that is not of type System updated");

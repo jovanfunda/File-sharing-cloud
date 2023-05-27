@@ -39,12 +39,6 @@ public interface Message extends Serializable {
 	ServentInfo getOriginalSenderInfo();
 	
 	/**
-	 * If a servent uses <code>makeMeASender</code> when resending a message, it will
-	 * be added to this list. So we can use this to see how this message got to us.
-	 */
-	List<ServentInfo> getRoute();
-	
-	/**
 	 * Information about the receiver of the message.
 	 */
 	ServentInfo getReceiverInfo();
@@ -64,12 +58,6 @@ public interface Message extends Serializable {
 	 * in the system.
 	 */
 	int getMessageId();
-
-	/**
-	 * Alters the message and returns a new copy with everything intact, except
-	 * the current node being added to the route list.
-	 */
-	Message makeMeASender();
 	
 	/**
 	 * Alters the message and returns a new copy with everything intact, except

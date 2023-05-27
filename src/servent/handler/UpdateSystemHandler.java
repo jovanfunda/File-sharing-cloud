@@ -16,12 +16,11 @@ public class UpdateSystemHandler implements MessageHandler {
 
     @Override
     public void run() {
-        if(clientMessage.getMessageType() == MessageType.SYSTEM_UPDATED) {
-            if(clientMessage.getReceiverInfo() == AppConfig.myServentInfo) {
+        if(clientMessage.getMessageType() == MessageType.UPDATE_SYSTEM) {
+            if(clientMessage.getReceiverInfo().getId() == AppConfig.myServentInfo.getId()) {
 
                 // dobili smo nove informacije o sistemu, trebali bismo da ih sacuvamo
                 // to se radi unutar AppConfig-a
-
 
                 Message systemUpdated = new SystemUpdatedMessage(AppConfig.myServentInfo, clientMessage.getOriginalSenderInfo());
                 MessageUtil.sendMessage(systemUpdated);

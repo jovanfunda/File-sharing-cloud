@@ -27,10 +27,6 @@ public class SuzukiMutex implements DistributedMutex {
         requestsReceived = new CopyOnWriteArrayList<>();
     }
 
-    // imamo problem
-    // token ce biti kod Serventa 1 i on i dalje nece da ima za komsiju broj 2 tkd ne moze da mu salje request za token
-    // treba namestiti da su oni komsije i da su arhitektura sami za sebe
-
     @Override
     public void lock() {
 
@@ -48,7 +44,7 @@ public class SuzukiMutex implements DistributedMutex {
 
                 Message requestMessage = new RequestTokenMessage(AppConfig.myServentInfo, AppConfig.myServentInfo, num);
                 for (ServentInfo s : AppConfig.getServentInfoList()) {
-                    requestMessage.changeReceiver(s.getId());
+                    requestMessage = requestMessage.changeReceiver(s.getId());
                     MessageUtil.sendMessage(requestMessage);
                 }
             }
