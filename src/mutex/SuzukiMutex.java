@@ -78,9 +78,4 @@ public class SuzukiMutex implements DistributedMutex {
     public void setNodeWithInfo(ServentInfo infoNode) {
         this.infoNode = infoNode;
     }
-
-    public ServentInfo getNodeWithInfo() {
-        return infoNode;
-    }
-
 }

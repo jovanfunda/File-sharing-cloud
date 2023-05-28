@@ -9,11 +9,11 @@ import java.util.List;
 
 public class HelloFromNodeMessage extends BasicMessage {
 
-    private List<ServentInfo> activeServents;
+    private final List<ServentInfo> activeServents;
 
     public HelloFromNodeMessage(ServentInfo originalSenderInfo, ServentInfo receiverInfo) {
         super(MessageType.HELLO_FROM_NODE, originalSenderInfo, receiverInfo);
-        this.activeServents = AppConfig.copyOfServentInfoList();
+        this.activeServents = AppConfig.getServentInfoList();
     }
 
     public List<ServentInfo> getActiveServents() {

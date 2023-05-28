@@ -20,10 +20,6 @@ public class RequestTokenMessage extends BasicMessage {
         sequenceCounter = sequenceNumber;
     }
 
-    public int getSequenceCounter() {
-        return sequenceCounter;
-    }
-
     @Override
     public Message changeReceiver(Integer newReceiverId) {
         if (AppConfig.myServentInfo.getNeighbors().contains(newReceiverId)) {
@@ -39,5 +35,20 @@ public class RequestTokenMessage extends BasicMessage {
             return null;
         }
 
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof RequestTokenMessage) {
+            RequestTokenMessage other = (RequestTokenMessage)obj;
+
+            if (getMessageId() == other.getMessageId() &&
+                    getOriginalSenderInfo().getId() == other.getOriginalSenderInfo().getId() &&
+                    getOriginalSenderInfo().getListenerPort() == other.getOriginalSenderInfo().getListenerPort()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

@@ -8,15 +8,16 @@ import servent.message.MessageType;
 
 public class UpdateSystemMessage extends BasicMessage {
 
-    // informacije o tome sta saljemo kroz ovu poruku
-    // sta sve treba da se apdejtuje?
+    public int newNodeId;
 
-    public UpdateSystemMessage(ServentInfo originalSenderInfo, ServentInfo receiverInfo) {
+    public UpdateSystemMessage(ServentInfo originalSenderInfo, ServentInfo receiverInfo, int newNodeId) {
         super(MessageType.UPDATE_SYSTEM, originalSenderInfo, receiverInfo);
+        this.newNodeId = newNodeId;
     }
 
-    public UpdateSystemMessage(ServentInfo originalSenderInfo, ServentInfo receiverInfo, int messageId) {
+    public UpdateSystemMessage(ServentInfo originalSenderInfo, ServentInfo receiverInfo, int newNodeId, int messageId) {
         super(MessageType.UPDATE_SYSTEM, originalSenderInfo, receiverInfo, "", messageId);
+        this.newNodeId = newNodeId;
     }
 
     @Override
@@ -25,7 +26,7 @@ public class UpdateSystemMessage extends BasicMessage {
             ServentInfo newReceiverInfo = AppConfig.getInfoById(newReceiverId);
 
             return new UpdateSystemMessage(getOriginalSenderInfo(),
-                    newReceiverInfo, getMessageId());
+                    newReceiverInfo, newNodeId, getMessageId());
         } else {
             AppConfig.timestampedErrorPrint("Trying to make a message for " + newReceiverId + " who is not a neighbor.");
 

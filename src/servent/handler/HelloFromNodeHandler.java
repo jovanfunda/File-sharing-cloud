@@ -10,15 +10,13 @@ import servent.message.MessageType;
 import servent.message.update.UpdateSystemMessage;
 import servent.message.util.MessageUtil;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public class HelloFromNodeHandler implements MessageHandler {
 
     private Message clientMessage;
     private DistributedMutex mutex;
-
 
     public HelloFromNodeHandler(Message clientMessage, DistributedMutex mutex) {
         this.clientMessage = clientMessage;
@@ -47,32 +45,11 @@ public class HelloFromNodeHandler implements MessageHandler {
                 newId = activeServents.size();
             }
 
-            AppConfig.timestampedStandardPrint("Novi ID mi je " + newId);
-
-            Set<Integer> myNewNeighbors = new HashSet<>();
-            for(ServentInfo activeServent: activeServents) {
-                if(activeServent.getId() == newId + 1 ||
-                        activeServent.getId() == newId - 1 ||
-                        activeServent.getId() == newId + 2 ||
-                        activeServent.getId() == newId - 2) {
-                    myNewNeighbors.add(activeServent.getId());
-                }
-            }
-
-            AppConfig.timestampedStandardPrint("moje nove komsije.." + myNewNeighbors);
-
-            for(Integer newNeighbor: myNewNeighbors) {
-                AppConfig.myServentInfo.addNeighbor(newNeighbor);
-            }
-
-            AppConfig.serventInfoList = activeServents;
-
-            Message updateSystem = new UpdateSystemMessage(AppConfig.myServentInfo, AppConfig.myServentInfo);
+            AppConfig.serventInfoList = new ArrayList<>(activeServents);
+            AppConfig.addServentInfo(AppConfig.myServentInfo);
 
             for(ServentInfo s : activeServents) {
-                updateSystem = updateSystem.changeReceiver(s.getId());
-                MessageUtil.sendMessage(updateSystem);
-                AppConfig.timestampedStandardPrint("Poslao sam poruku u HelloFromNodeHandler " + updateSystem);
+                MessageUtil.sendMessage(new UpdateSystemMessage(AppConfig.myServentInfo, AppConfig.getInfoById(s.getId()), newId));
             }
 
             while(((SuzukiMutex) mutex).messagesReceived.get() != activeServents.size()) {
@@ -83,12 +60,13 @@ public class HelloFromNodeHandler implements MessageHandler {
                 }
             }
 
+
             AppConfig.myServentInfo.setId(newId);
-            AppConfig.addServentInfo(AppConfig.myServentInfo);
+            AppConfig.reorganizeArchitecture();
 
             ((SuzukiMutex) mutex).messagesReceived.set(0);
 
-            AppConfig.timestampedStandardPrint("Svi su me prihvatili!");
+            AppConfig.timestampedStandardPrint("Svi su me prihvatili! Novi ID mi je " + newId);
 
             mutex.unlock();
         }

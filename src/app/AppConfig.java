@@ -2,9 +2,7 @@ package app;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * This class contains all the global application configuration stuff.
@@ -77,11 +75,53 @@ public class AppConfig {
 		return serventInfoList;
 	}
 
-	public static List<ServentInfo> copyOfServentInfoList() {
-		return new ArrayList<>(serventInfoList);
-	}
-
 	public static ServentInfo getBootstrapNode() {
 		return bootstrapNode;
+	}
+
+	public static void reorganizeArchitecture() {
+
+		int myId = myServentInfo.getId();
+
+		serventInfoList.sort(Comparator.comparingInt(ServentInfo::getId));
+
+		Set<Integer> myNewNeighbors = new HashSet<>();
+
+		if(serventInfoList.size() <= 5) {
+			for (ServentInfo serventInfo : serventInfoList) {
+				myNewNeighbors.add(serventInfo.getId());
+			}
+		} else {
+			for (int i = 0; i < serventInfoList.size(); i++) {
+				if (serventInfoList.get(i).getId() == myId) {
+					if (i >= 2) {
+						myNewNeighbors.add(serventInfoList.get(i - 1).getId());
+						myNewNeighbors.add(serventInfoList.get(i - 2).getId());
+					} else if (i == 1) {
+						myNewNeighbors.add(serventInfoList.get(0).getId());
+						myNewNeighbors.add(serventInfoList.get(serventInfoList.size() - 1).getId());
+					} else if (i == 0) {
+						myNewNeighbors.add(serventInfoList.get(serventInfoList.size() - 1).getId());
+						myNewNeighbors.add(serventInfoList.get(serventInfoList.size() - 2).getId());
+					}
+					// poslednji element
+					if (i == serventInfoList.size() - 1) {
+						myNewNeighbors.add(serventInfoList.get(0).getId());
+						myNewNeighbors.add(serventInfoList.get(1).getId());
+						// pretposlednji element
+					} else if (i == serventInfoList.size() - 2) {
+						myNewNeighbors.add(serventInfoList.get(serventInfoList.size() - 1).getId());
+						myNewNeighbors.add(serventInfoList.get(0).getId());
+					} else {
+						myNewNeighbors.add(serventInfoList.get(i + 1).getId());
+						myNewNeighbors.add(serventInfoList.get(i + 2).getId());
+					}
+					break;
+				}
+			}
+		}
+
+		myNewNeighbors.remove(myServentInfo.getId());
+		AppConfig.myServentInfo.setNeighbors(myNewNeighbors.stream().toList());
 	}
 }

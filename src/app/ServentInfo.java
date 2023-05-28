@@ -50,6 +50,10 @@ public class ServentInfo implements Serializable {
 	public void removeNeighbor(int serventId) {
 		neighbors.remove(serventId);
 	}
+
+	public void setNeighbors(List<Integer> newNeighbors) {
+		this.neighbors = newNeighbors;
+	}
 	
 	@Override
 	public String toString() {
