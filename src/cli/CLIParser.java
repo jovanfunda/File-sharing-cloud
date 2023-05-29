@@ -7,6 +7,9 @@ import java.util.Scanner;
 import app.AppConfig;
 import app.Cancellable;
 import cli.command.*;
+import cli.command.files.AddFileCommand;
+import cli.command.files.PullFileCommand;
+import cli.command.files.RemoveFileCommand;
 import mutex.DistributedMutex;
 import servent.SimpleServentListener;
 
@@ -41,6 +44,9 @@ public class CLIParser implements Runnable, Cancellable {
 		commandList.add(new PauseCommand());
 		commandList.add(new StopCommand(this, listener));
 		commandList.add(new FirstCommand());
+		commandList.add(new AddFileCommand());
+		commandList.add(new RemoveFileCommand());
+		commandList.add(new PullFileCommand());
 	}
 	
 	@Override
