@@ -25,9 +25,12 @@ public class InfoCommand implements CLICommand {
 		for (Integer neighbor : AppConfig.myServentInfo.getNeighbors()) {
 			neighbors.append(neighbor).append(" ");
 		}
-		AppConfig.timestampedStandardPrint("Neighbors:" + neighbors);
+		AppConfig.timestampedStandardPrint("Neighbors: " + neighbors);
 
 		AppConfig.timestampedStandardPrint("Token: " + ((SuzukiMutex) mutex).hasToken());
+
+		AppConfig.timestampedStandardPrint(((SuzukiMutex) mutex).finishedRequests + "");
+		AppConfig.timestampedStandardPrint(((SuzukiMutex) mutex).requestsReceived + "");
 
 	}
 

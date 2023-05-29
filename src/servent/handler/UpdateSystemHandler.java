@@ -2,6 +2,8 @@ package servent.handler;
 
 import app.AppConfig;
 import app.ServentInfo;
+import mutex.DistributedMutex;
+import mutex.SuzukiMutex;
 import servent.message.Message;
 import servent.message.MessageType;
 import servent.message.update.SystemUpdatedMessage;
@@ -11,9 +13,11 @@ import servent.message.util.MessageUtil;
 public class UpdateSystemHandler implements MessageHandler {
 
     private final Message clientMessage;
+    private DistributedMutex mutex;
 
-    public UpdateSystemHandler(Message clientMessage) {
+    public UpdateSystemHandler(Message clientMessage, DistributedMutex mutex) {
         this.clientMessage = clientMessage;
+        this.mutex = mutex;
     }
 
     @Override
@@ -28,6 +32,8 @@ public class UpdateSystemHandler implements MessageHandler {
 
                 AppConfig.addServentInfo(newServent);
                 AppConfig.reorganizeArchitecture();
+                ((SuzukiMutex)mutex).finishedRequests.add(0);
+                ((SuzukiMutex)mutex).requestsReceived.add(0);
 
                 MessageUtil.sendMessage(new SystemUpdatedMessage(AppConfig.myServentInfo, clientMessage.getOriginalSenderInfo()));
             }

@@ -7,6 +7,8 @@ import servent.message.mutex.RequestTokenMessage;
 import servent.message.util.MessageUtil;
 
 import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -15,13 +17,17 @@ public class SuzukiMutex implements DistributedMutex {
     private volatile boolean haveToken = false;
     public volatile boolean usingToken = false;
 
+    public Queue<ServentInfo> serventsWaiting = new ArrayBlockingQueue<>(20);
+
+    public List<Integer> finishedRequests = new CopyOnWriteArrayList<>();
+
     private ServentInfo infoNode;
 
-    public AtomicInteger messagesReceived = new AtomicInteger(0);
+    public AtomicInteger systemUpdatedMessagesReceived = new AtomicInteger(0);
 
     public List<Integer> requestsReceived;
 
-    private static AtomicInteger sequenceNumber = new AtomicInteger(0);
+    private static final AtomicInteger sequenceNumber = new AtomicInteger(0);
 
     public SuzukiMutex() {
         requestsReceived = new CopyOnWriteArrayList<>();
@@ -64,6 +70,16 @@ public class SuzukiMutex implements DistributedMutex {
     @Override
     public void unlock() {
         usingToken = false;
+        finishedRequests.set(AppConfig.myServentInfo.getId(), requestsReceived.get(AppConfig.myServentInfo.getId()));
+
+        for(int i = 0; i < requestsReceived.size(); i++) {
+            if(finishedRequests.get(i) + 1 == requestsReceived.get(i)) {
+                if(!serventsWaiting.contains(AppConfig.getInfoById(i))) {
+                    serventsWaiting.add(AppConfig.getInfoById(i));
+                }
+            }
+        }
+
         AppConfig.timestampedStandardPrint("Unlocked!");
     }
 

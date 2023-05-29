@@ -8,7 +8,7 @@ import servent.message.MessageType;
 
 public class RequestTokenMessage extends BasicMessage {
 
-    int sequenceCounter;
+    public int sequenceCounter;
 
     public RequestTokenMessage(ServentInfo originalSenderInfo, ServentInfo receiverInfo, int sequenceNumber) {
         super(MessageType.REQUEST_TOKEN, originalSenderInfo, receiverInfo);
@@ -25,10 +25,8 @@ public class RequestTokenMessage extends BasicMessage {
         if (AppConfig.myServentInfo.getNeighbors().contains(newReceiverId)) {
             ServentInfo newReceiverInfo = AppConfig.getInfoById(newReceiverId);
 
-            Message toReturn = new RequestTokenMessage(getOriginalSenderInfo(),
+            return new RequestTokenMessage(getOriginalSenderInfo(),
                     newReceiverInfo, sequenceCounter, getMessageId());
-
-            return toReturn;
         } else {
             AppConfig.timestampedErrorPrint("Trying to make a message for " + newReceiverId + " who is not a neighbor.");
 
@@ -42,11 +40,9 @@ public class RequestTokenMessage extends BasicMessage {
         if (obj instanceof RequestTokenMessage) {
             RequestTokenMessage other = (RequestTokenMessage)obj;
 
-            if (getMessageId() == other.getMessageId() &&
+            return getMessageId() == other.getMessageId() &&
                     getOriginalSenderInfo().getId() == other.getOriginalSenderInfo().getId() &&
-                    getOriginalSenderInfo().getListenerPort() == other.getOriginalSenderInfo().getListenerPort()) {
-                return true;
-            }
+                    getOriginalSenderInfo().getListenerPort() == other.getOriginalSenderInfo().getListenerPort();
         }
 
         return false;

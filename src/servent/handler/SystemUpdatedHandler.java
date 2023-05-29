@@ -20,7 +20,7 @@ public class SystemUpdatedHandler implements MessageHandler {
     public void run() {
         if(clientMessage.getMessageType() == MessageType.SYSTEM_UPDATED) {
             if(clientMessage.getReceiverInfo().getId() == AppConfig.myServentInfo.getId()) {
-                ((SuzukiMutex) mutex).messagesReceived.addAndGet(1);
+                ((SuzukiMutex) mutex).systemUpdatedMessagesReceived.addAndGet(1);
             }
         } else {
             AppConfig.timestampedErrorPrint("Got message that is not of type System updated");

@@ -16,12 +16,12 @@ import java.util.concurrent.ConcurrentHashMap;
 public class RequestTokenHandler implements MessageHandler {
 
     private Message clientMessage;
-    private final SuzukiMutex mutex;
+    private final DistributedMutex mutex;
     private static final Set<RequestTokenMessage> receivedMessages = Collections.newSetFromMap(new ConcurrentHashMap<RequestTokenMessage, Boolean>());
 
     public RequestTokenHandler(Message clientMessage, DistributedMutex mutex){
         this.clientMessage = clientMessage;
-        this.mutex = (SuzukiMutex) mutex;
+        this.mutex = mutex;
     }
 
     @Override
@@ -30,16 +30,28 @@ public class RequestTokenHandler implements MessageHandler {
         boolean didPut = receivedMessages.add((RequestTokenMessage) clientMessage);
 
         if (didPut) {
-            if (mutex.hasToken()) {
-                while (mutex.usingToken) {
+
+            AppConfig.timestampedStandardPrint(((SuzukiMutex)mutex).requestsReceived  + " " + ((RequestTokenMessage)clientMessage).sequenceCounter);
+
+            if(clientMessage.getOriginalSenderInfo().getId() != -1) {
+                if (((SuzukiMutex) mutex).requestsReceived.get(clientMessage.getOriginalSenderInfo().getId()) <= ((RequestTokenMessage) clientMessage).sequenceCounter) {
+                    ((SuzukiMutex) mutex).requestsReceived.set(clientMessage.getOriginalSenderInfo().getId(), ((RequestTokenMessage) clientMessage).sequenceCounter);
+                } else {
+                    return;
+                    // ? zahtev je zastareo
+                }
+            }
+
+            if (((SuzukiMutex)mutex).hasToken()) {
+                while (((SuzukiMutex)mutex).usingToken) {
                     try {
                         Thread.sleep(100);
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
                 }
-                mutex.setTokenActive(false);
-                MessageUtil.sendMessage(new TokenMessage(AppConfig.myServentInfo, clientMessage.getOriginalSenderInfo()));
+                ((SuzukiMutex)mutex).setTokenActive(false);
+                MessageUtil.sendMessage(new TokenMessage(AppConfig.myServentInfo, clientMessage.getOriginalSenderInfo(), ((SuzukiMutex)mutex).serventsWaiting, ((SuzukiMutex)mutex).finishedRequests));
             } else {
                 for (Integer neighbor : AppConfig.myServentInfo.getNeighbors()) {
                     clientMessage = clientMessage.changeReceiver(neighbor);

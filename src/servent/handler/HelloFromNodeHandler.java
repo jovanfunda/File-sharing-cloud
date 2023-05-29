@@ -52,7 +52,7 @@ public class HelloFromNodeHandler implements MessageHandler {
                 MessageUtil.sendMessage(new UpdateSystemMessage(AppConfig.myServentInfo, AppConfig.getInfoById(s.getId()), newId));
             }
 
-            while(((SuzukiMutex) mutex).messagesReceived.get() != activeServents.size()) {
+            while(((SuzukiMutex) mutex).systemUpdatedMessagesReceived.get() != activeServents.size()) {
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
@@ -64,7 +64,12 @@ public class HelloFromNodeHandler implements MessageHandler {
             AppConfig.myServentInfo.setId(newId);
             AppConfig.reorganizeArchitecture();
 
-            ((SuzukiMutex) mutex).messagesReceived.set(0);
+            ((SuzukiMutex) mutex).systemUpdatedMessagesReceived.set(0);
+
+            for(ServentInfo s: AppConfig.serventInfoList) {
+                ((SuzukiMutex) mutex).finishedRequests.add(0);
+                ((SuzukiMutex) mutex).requestsReceived.add(0);
+            }
 
             AppConfig.timestampedStandardPrint("Svi su me prihvatili! Novi ID mi je " + newId);
 

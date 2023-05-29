@@ -73,7 +73,7 @@ public class SimpleServentListener implements Runnable, Cancellable {
 						messageHandler = new TokenHandler(clientMessage, mutex);
 						break;
 					case UPDATE_SYSTEM:
-						messageHandler = new UpdateSystemHandler(clientMessage);
+						messageHandler = new UpdateSystemHandler(clientMessage, mutex);
 						break;
 					case SYSTEM_UPDATED:
 						messageHandler = new SystemUpdatedHandler(clientMessage, mutex);

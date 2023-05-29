@@ -36,6 +36,9 @@ public class HelloFromBootstrapHandler implements MessageHandler {
                 AppConfig.myServentInfo.setId(0);
                 AppConfig.addServentInfo(AppConfig.myServentInfo);
 
+                ((SuzukiMutex) mutex).finishedRequests.add(0);
+                ((SuzukiMutex) mutex).requestsReceived.add(0);
+
                 AppConfig.timestampedStandardPrint("Primljen sam u arhitekturu kao prvi cvor!");
 
                 mutex.unlock();
