@@ -8,7 +8,6 @@ import servent.message.bootstrap.HelloFromBootstrapMessage;
 import servent.message.util.MessageUtil;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 public class HelloToBootstrapHandler implements MessageHandler {
 

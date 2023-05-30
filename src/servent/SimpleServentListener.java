@@ -11,6 +11,8 @@ import app.AppConfig;
 import app.Cancellable;
 import mutex.DistributedMutex;
 import servent.handler.*;
+import servent.handler.file.PullFileHandler;
+import servent.handler.file.SendFileHandler;
 import servent.handler.mutex.TokenHandler;
 import servent.handler.mutex.RequestTokenHandler;
 import servent.message.Message;
@@ -77,6 +79,13 @@ public class SimpleServentListener implements Runnable, Cancellable {
 						break;
 					case SYSTEM_UPDATED:
 						messageHandler = new SystemUpdatedHandler(clientMessage, mutex);
+						break;
+					case PULL_FILE:
+						messageHandler = new PullFileHandler(clientMessage);
+						break;
+					case SEND_FILE:
+						messageHandler = new SendFileHandler(clientMessage);
+						break;
 				}
 				
 				threadPool.submit(messageHandler);
