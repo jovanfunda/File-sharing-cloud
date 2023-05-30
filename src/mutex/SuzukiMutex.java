@@ -36,7 +36,7 @@ public class SuzukiMutex implements DistributedMutex {
     @Override
     public void lock() {
 
-        AppConfig.timestampedStandardPrint("Zapocinjem lock!");
+        AppConfig.timestampedStandardPrint("Hocu da lockujem!");
 
         usingToken = true;
 
@@ -50,8 +50,10 @@ public class SuzukiMutex implements DistributedMutex {
 
                 Message requestMessage = new RequestTokenMessage(AppConfig.myServentInfo, AppConfig.myServentInfo, num);
                 for (ServentInfo s : AppConfig.getServentInfoList()) {
-                    requestMessage = requestMessage.changeReceiver(s.getId());
-                    MessageUtil.sendMessage(requestMessage);
+                    if(s != AppConfig.myServentInfo) {
+                        requestMessage = requestMessage.changeReceiver(s.getId());
+                        MessageUtil.sendMessage(requestMessage);
+                    }
                 }
             }
         }
@@ -64,21 +66,21 @@ public class SuzukiMutex implements DistributedMutex {
             }
         }
 
-        AppConfig.timestampedStandardPrint("Zavrsio sam lock!");
+        AppConfig.timestampedStandardPrint("Uzeo sam lock!");
     }
 
     @Override
     public void unlock() {
         usingToken = false;
-        finishedRequests.set(AppConfig.myServentInfo.getId(), requestsReceived.get(AppConfig.myServentInfo.getId()));
-
-        for(int i = 0; i < requestsReceived.size(); i++) {
-            if(finishedRequests.get(i) + 1 == requestsReceived.get(i)) {
-                if(!serventsWaiting.contains(AppConfig.getInfoById(i))) {
-                    serventsWaiting.add(AppConfig.getInfoById(i));
-                }
-            }
-        }
+//        finishedRequests.set(AppConfig.myServentInfo.getId(), requestsReceived.get(AppConfig.myServentInfo.getId()));
+//
+//        for(int i = 0; i < requestsReceived.size(); i++) {
+//            if(finishedRequests.get(i) + 1 == requestsReceived.get(i)) {
+//                if(!serventsWaiting.contains(AppConfig.getInfoById(i))) {
+//                    serventsWaiting.add(AppConfig.getInfoById(i));
+//                }
+//            }
+//        }
 
         AppConfig.timestampedStandardPrint("Unlocked!");
     }

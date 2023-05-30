@@ -19,6 +19,8 @@ public class AppConfig {
 	public static List<ServentInfo> serventInfoList = new ArrayList<>();
 
 	private static ServentInfo bootstrapNode = new ServentInfo("localhost", -1, 1000, new ArrayList<>());
+
+	public static Map<Integer, List<String>> serventFiles = new HashMap<>();
 	
 	/**
 	 * Print a message to stdout with a timestamp

@@ -71,6 +71,9 @@ public class HelloFromNodeHandler implements MessageHandler {
                 ((SuzukiMutex) mutex).requestsReceived.add(0);
             }
 
+            AppConfig.serventFiles = ((HelloFromNodeMessage) clientMessage).serventFiles;
+            AppConfig.serventFiles.put(newId, new ArrayList<>());
+
             AppConfig.timestampedStandardPrint("Svi su me prihvatili! Novi ID mi je " + newId);
 
             mutex.unlock();

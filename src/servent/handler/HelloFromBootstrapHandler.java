@@ -10,6 +10,8 @@ import servent.message.MessageType;
 import servent.message.bootstrap.HelloFromBootstrapMessage;
 import servent.message.util.MessageUtil;
 
+import java.util.ArrayList;
+
 public class HelloFromBootstrapHandler implements MessageHandler {
 
     private Message clientMessage;
@@ -38,6 +40,7 @@ public class HelloFromBootstrapHandler implements MessageHandler {
 
                 ((SuzukiMutex) mutex).finishedRequests.add(0);
                 ((SuzukiMutex) mutex).requestsReceived.add(0);
+                AppConfig.serventFiles.put(0, new ArrayList<>());
 
                 AppConfig.timestampedStandardPrint("Primljen sam u arhitekturu kao prvi cvor!");
 

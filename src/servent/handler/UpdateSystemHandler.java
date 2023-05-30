@@ -10,6 +10,9 @@ import servent.message.update.SystemUpdatedMessage;
 import servent.message.update.UpdateSystemMessage;
 import servent.message.util.MessageUtil;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class UpdateSystemHandler implements MessageHandler {
 
     private final Message clientMessage;
@@ -25,16 +28,25 @@ public class UpdateSystemHandler implements MessageHandler {
         if(clientMessage.getMessageType() == MessageType.UPDATE_SYSTEM) {
             if(clientMessage.getReceiverInfo().getId() == AppConfig.myServentInfo.getId()) {
 
-                ServentInfo newServent = new ServentInfo(clientMessage.getOriginalSenderInfo().getIpAddress(),
-                        ((UpdateSystemMessage)clientMessage).newNodeId,
-                        clientMessage.getOriginalSenderInfo().getListenerPort(),
-                        clientMessage.getOriginalSenderInfo().getNeighbors());
+                if (((UpdateSystemMessage) clientMessage).newNodeId != -1) {
+                    ServentInfo newServent = new ServentInfo(clientMessage.getOriginalSenderInfo().getIpAddress(),
+                            ((UpdateSystemMessage) clientMessage).newNodeId,
+                            clientMessage.getOriginalSenderInfo().getListenerPort(),
+                            clientMessage.getOriginalSenderInfo().getNeighbors());
 
-                AppConfig.addServentInfo(newServent);
-                AppConfig.reorganizeArchitecture();
-                ((SuzukiMutex)mutex).finishedRequests.add(0);
-                ((SuzukiMutex)mutex).requestsReceived.add(0);
 
+                    AppConfig.addServentInfo(newServent);
+                    AppConfig.reorganizeArchitecture();
+                    ((SuzukiMutex) mutex).finishedRequests.add(0);
+                    ((SuzukiMutex) mutex).requestsReceived.add(0);
+                    AppConfig.serventFiles.put(((UpdateSystemMessage) clientMessage).newNodeId, new ArrayList<>());
+                } else if (((UpdateSystemMessage) clientMessage).newFiles.size() != 0) {
+
+                    List<String> newFilesList = new ArrayList<>(AppConfig.serventFiles.get(clientMessage.getOriginalSenderInfo().getId()));
+                    newFilesList.addAll(((UpdateSystemMessage) clientMessage).newFiles);
+                    AppConfig.serventFiles.put(clientMessage.getOriginalSenderInfo().getId(), newFilesList);
+
+                }
                 MessageUtil.sendMessage(new SystemUpdatedMessage(AppConfig.myServentInfo, clientMessage.getOriginalSenderInfo()));
             }
         } else {

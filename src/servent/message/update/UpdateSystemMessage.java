@@ -6,9 +6,18 @@ import servent.message.BasicMessage;
 import servent.message.Message;
 import servent.message.MessageType;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class UpdateSystemMessage extends BasicMessage {
 
-    public int newNodeId;
+    public int newNodeId = -1;
+
+    public List<String> newFiles = new ArrayList<>();
+
+    public UpdateSystemMessage(ServentInfo originalSenderInfo, ServentInfo receiverInfo) {
+        super(MessageType.UPDATE_SYSTEM, originalSenderInfo, receiverInfo);
+    }
 
     public UpdateSystemMessage(ServentInfo originalSenderInfo, ServentInfo receiverInfo, int newNodeId) {
         super(MessageType.UPDATE_SYSTEM, originalSenderInfo, receiverInfo);

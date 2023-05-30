@@ -31,6 +31,7 @@ public class InfoCommand implements CLICommand {
 
 		AppConfig.timestampedStandardPrint(((SuzukiMutex) mutex).finishedRequests + "");
 		AppConfig.timestampedStandardPrint(((SuzukiMutex) mutex).requestsReceived + "");
+		AppConfig.timestampedStandardPrint(AppConfig.serventFiles + "");
 
 	}
 

@@ -60,4 +60,12 @@ public class ServentInfo implements Serializable {
 		return "[" + id + "|" + ipAddress + "|" + listenerPort + "]";
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if(obj instanceof ServentInfo other) {
+			return id == other.id && ipAddress.equals(other.ipAddress)
+					&& listenerPort == other.listenerPort;
+		}
+		return false;
+	}
 }
