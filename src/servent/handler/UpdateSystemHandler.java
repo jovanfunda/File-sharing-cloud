@@ -40,13 +40,26 @@ public class UpdateSystemHandler implements MessageHandler {
                     ((SuzukiMutex) mutex).finishedRequests.add(0);
                     ((SuzukiMutex) mutex).requestsReceived.add(0);
                     AppConfig.serventFiles.put(((UpdateSystemMessage) clientMessage).newNodeId, new ArrayList<>());
+
                 } else if (((UpdateSystemMessage) clientMessage).newFiles.size() != 0) {
 
                     List<String> newFilesList = new ArrayList<>(AppConfig.serventFiles.get(clientMessage.getOriginalSenderInfo().getId()));
                     newFilesList.addAll(((UpdateSystemMessage) clientMessage).newFiles);
                     AppConfig.serventFiles.put(clientMessage.getOriginalSenderInfo().getId(), newFilesList);
 
+                    ((UpdateSystemMessage) clientMessage).newFiles = new ArrayList<>();
+
+                } else if (((UpdateSystemMessage) clientMessage).removedFiles.size() != 0) {
+
+                    List<String> newFilesList = new ArrayList<>(AppConfig.serventFiles.get(clientMessage.getOriginalSenderInfo().getId()));
+                    newFilesList.removeAll(((UpdateSystemMessage) clientMessage).removedFiles);
+                    AppConfig.serventFiles.put(clientMessage.getOriginalSenderInfo().getId(), newFilesList);
+
+
+                    ((UpdateSystemMessage) clientMessage).removedFiles = new ArrayList<>();
                 }
+
+
                 MessageUtil.sendMessage(new SystemUpdatedMessage(AppConfig.myServentInfo, clientMessage.getOriginalSenderInfo()));
             }
         } else {
