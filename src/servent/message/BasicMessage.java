@@ -82,19 +82,12 @@ public class BasicMessage implements Message {
 	 */
 	@Override
 	public Message changeReceiver(Integer newReceiverId) {
-		if (AppConfig.myServentInfo.getNeighbors().contains(newReceiverId)) {
 			ServentInfo newReceiverInfo = AppConfig.getInfoById(newReceiverId);
 
 			Message toReturn = new BasicMessage(getMessageType(), getOriginalSenderInfo(),
 					newReceiverInfo, getMessageText(), getMessageId());
 
 			return toReturn;
-		} else {
-			AppConfig.timestampedErrorPrint("Trying to make a message for " + newReceiverId + " who is not a neighbor.");
-			
-			return null;
-		}
-		
 	}
 	
 	/**

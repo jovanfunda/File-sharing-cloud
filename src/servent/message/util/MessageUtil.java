@@ -11,6 +11,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import app.AppConfig;
 import servent.message.Message;
+import servent.message.MessageType;
 
 /**
  * For now, just the read and send implementation, based on Java serializing.
@@ -22,22 +23,16 @@ import servent.message.Message;
  *
  */
 public class MessageUtil {
-
-	/**
-	 * Normally this should be true, because it helps with debugging.
-	 * Flip this to false to disable printing every message send / receive.
-	 */
-	public static final boolean MESSAGE_UTIL_PRINTING = true;
 	
 	public static Message readMessage(Socket socket) {
-		
+
 		Message clientMessage = null;
 			
 		try {
 			ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
 	
 			clientMessage = (Message) ois.readObject();
-			
+
 			socket.close();
 		} catch (IOException e) {
 			AppConfig.timestampedErrorPrint("Error in reading socket on " +
@@ -45,10 +40,8 @@ public class MessageUtil {
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
-		
-		if (MESSAGE_UTIL_PRINTING) {
-			AppConfig.timestampedStandardPrint("Got message " + clientMessage);
-		}
+
+//		AppConfig.timestampedStandardPrint("Got message " + clientMessage);
 				
 		return clientMessage;
 	}

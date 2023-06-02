@@ -22,27 +22,23 @@ public class RequestTokenMessage extends BasicMessage {
 
     @Override
     public Message changeReceiver(Integer newReceiverId) {
-        if (AppConfig.myServentInfo.getNeighbors().contains(newReceiverId)) {
-            ServentInfo newReceiverInfo = AppConfig.getInfoById(newReceiverId);
+        ServentInfo newReceiverInfo = AppConfig.getInfoById(newReceiverId);
 
-            return new RequestTokenMessage(getOriginalSenderInfo(),
-                    newReceiverInfo, sequenceCounter, getMessageId());
-        } else {
-            AppConfig.timestampedErrorPrint("Trying to make a message for " + newReceiverId + " who is not a neighbor.");
-
-            return null;
-        }
-
+        return new RequestTokenMessage(getOriginalSenderInfo(),
+                newReceiverInfo, sequenceCounter, getMessageId());
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof RequestTokenMessage) {
-            RequestTokenMessage other = (RequestTokenMessage)obj;
+        if (obj instanceof RequestTokenMessage other) {
 
-            return getMessageId() == other.getMessageId() &&
-                    getOriginalSenderInfo().getId() == other.getOriginalSenderInfo().getId() &&
-                    getOriginalSenderInfo().getListenerPort() == other.getOriginalSenderInfo().getListenerPort();
+            boolean messageId = getMessageId() == other.getMessageId();
+            boolean id = getOriginalSenderInfo().getId() == other.getOriginalSenderInfo().getId();
+            boolean port = getOriginalSenderInfo().getListenerPort() == other.getOriginalSenderInfo().getListenerPort();
+            boolean serventValue = getReceiverInfo().equals(other.getReceiverInfo());
+
+            return messageId && id && port && serventValue;
+
         }
 
         return false;

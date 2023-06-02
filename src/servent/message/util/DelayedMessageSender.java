@@ -3,6 +3,7 @@ package servent.message.util;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.Objects;
 
 import app.AppConfig;
 import app.ServentInfo;
@@ -67,14 +68,15 @@ public class DelayedMessageSender implements Runnable {
 
 					ObjectOutputStream oos = new ObjectOutputStream(sendSocket.getOutputStream());
 					oos.writeObject(messageToSend);
-
 					oos.flush();
 
 					sendSocket.close();
+
 				}
 			}
 		} catch (IOException e) {
 			AppConfig.timestampedErrorPrint("Couldn't send message: " + messageToSend);
+			AppConfig.timestampedErrorPrint(e.getMessage());
 		}
 	}
 }

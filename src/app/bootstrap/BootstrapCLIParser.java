@@ -19,7 +19,7 @@ public class BootstrapCLIParser implements Runnable {
         while (working) {
             String commandLine = sc.nextLine();
 
-            if(commandLine.equals("stop")) {
+            if(commandLine.equals("]")) {
                 stopCommand.execute();
             } else {
                 System.err.println("Unknown command: " + commandLine);

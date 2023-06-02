@@ -32,6 +32,5 @@ public class HelloToBootstrapHandler implements MessageHandler {
 //            MessageUtil.sendMessage(new HelloFromBootstrapMessage(clientMessage.getOriginalSenderInfo(), BootstrapNode.activeNodes.get(new Random().nextInt(BootstrapNode.activeNodes.size()))));
             BootstrapNode.activeNodes.add(new ServentInfo("", -1, 1, new ArrayList<>()));
         }
-
     }
 }

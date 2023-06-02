@@ -55,10 +55,12 @@ public class AddFileCommand implements CLICommand {
                     oldList.add(fileName);
                     AppConfig.serventFiles.put(AppConfig.myServentInfo.getId(), oldList);
 
+                    UpdateSystemMessage message = new UpdateSystemMessage(AppConfig.myServentInfo, AppConfig.myServentInfo);
+                    message.newFiles = newFiles;
+
                     for(ServentInfo s : AppConfig.serventInfoList) {
                         if (s != AppConfig.myServentInfo) {
-                            UpdateSystemMessage message = new UpdateSystemMessage(AppConfig.myServentInfo, AppConfig.getInfoById(s.getId()));
-                            message.newFiles = newFiles;
+                            message = (UpdateSystemMessage) message.changeReceiver(s.getId());
                             MessageUtil.sendMessage(message);
                         }
                     }
@@ -70,6 +72,14 @@ public class AddFileCommand implements CLICommand {
                             throw new RuntimeException(e);
                         }
                     }
+
+//                    try {
+//                        AppConfig.timestampedStandardPrint("Pre slipa");
+//                        Thread.sleep(2000);
+//                        AppConfig.timestampedStandardPrint("posle slipa");
+//                    } catch (InterruptedException e) {
+//                        throw new RuntimeException(e);
+//                    }
 
                     mutex.unlock();
                 } catch (FileAlreadyExistsException e) {
@@ -102,10 +112,13 @@ public class AddFileCommand implements CLICommand {
                     }
                 }
 
+
+                UpdateSystemMessage message = new UpdateSystemMessage(AppConfig.myServentInfo, AppConfig.myServentInfo);
+                message.newFiles = newFiles;
+
                 for(ServentInfo s : AppConfig.serventInfoList) {
-                    if(s != AppConfig.myServentInfo) {
-                        UpdateSystemMessage message = new UpdateSystemMessage(AppConfig.myServentInfo, AppConfig.getInfoById(s.getId()));
-                        message.newFiles = newFiles;
+                    if (s != AppConfig.myServentInfo) {
+                        message = (UpdateSystemMessage) message.changeReceiver(s.getId());
                         MessageUtil.sendMessage(message);
                     }
                 }
@@ -118,6 +131,14 @@ public class AddFileCommand implements CLICommand {
                     }
                 }
                 ((SuzukiMutex) mutex).systemUpdatedMessagesReceived.set(0);
+
+//                try {
+//                    AppConfig.timestampedStandardPrint("Pre slipa");
+//                    Thread.sleep(2000);
+//                    AppConfig.timestampedStandardPrint("posle slipa");
+//                } catch (InterruptedException e) {
+//                    throw new RuntimeException(e);
+//                }
 
                 mutex.unlock();
             } else {

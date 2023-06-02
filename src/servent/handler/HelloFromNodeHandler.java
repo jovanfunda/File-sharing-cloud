@@ -29,9 +29,13 @@ public class HelloFromNodeHandler implements MessageHandler {
 
             ((SuzukiMutex)mutex).setNodeWithInfo(clientMessage.getOriginalSenderInfo());
 
+            List<ServentInfo> activeServents = ((HelloFromNodeMessage)clientMessage).getActiveServents();
+
+            AppConfig.serventInfoList = new ArrayList<>(activeServents);
+            AppConfig.addServentInfo(AppConfig.myServentInfo);
+
             mutex.lock();
 
-            List<ServentInfo> activeServents = ((HelloFromNodeMessage)clientMessage).getActiveServents();
             int newId = -1;
 
             for(int i = 0; i < activeServents.size(); i++) {
@@ -44,9 +48,6 @@ public class HelloFromNodeHandler implements MessageHandler {
             if(newId == -1) {
                 newId = activeServents.size();
             }
-
-            AppConfig.serventInfoList = new ArrayList<>(activeServents);
-            AppConfig.addServentInfo(AppConfig.myServentInfo);
 
             for(ServentInfo s : activeServents) {
                 MessageUtil.sendMessage(new UpdateSystemMessage(AppConfig.myServentInfo, AppConfig.getInfoById(s.getId()), newId));
@@ -66,13 +67,13 @@ public class HelloFromNodeHandler implements MessageHandler {
 
             ((SuzukiMutex) mutex).systemUpdatedMessagesReceived.set(0);
 
-            for(ServentInfo s: AppConfig.serventInfoList) {
-                ((SuzukiMutex) mutex).finishedRequests.add(0);
-                ((SuzukiMutex) mutex).requestsReceived.add(0);
-            }
-
             AppConfig.serventFiles = ((HelloFromNodeMessage) clientMessage).serventFiles;
             AppConfig.serventFiles.put(newId, new ArrayList<>());
+
+            ((SuzukiMutex) mutex).finishedRequests = new ArrayList<>(((HelloFromNodeMessage) clientMessage).requestsList);
+            ((SuzukiMutex) mutex).requestsReceived = new ArrayList<>(((HelloFromNodeMessage) clientMessage).requestsList);
+            ((SuzukiMutex) mutex).finishedRequests.add(0);
+            ((SuzukiMutex) mutex).requestsReceived.add(0);
 
             AppConfig.timestampedStandardPrint("Svi su me prihvatili! Novi ID mi je " + newId);
 

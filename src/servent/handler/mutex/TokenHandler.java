@@ -6,12 +6,18 @@ import mutex.SuzukiMutex;
 import servent.handler.MessageHandler;
 import servent.message.Message;
 import servent.message.MessageType;
+import servent.message.mutex.TokenMessage;
+import servent.message.util.MessageUtil;
+
+import java.util.Collections;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class TokenHandler implements MessageHandler {
 
-	private final Message clientMessage;
+	private Message clientMessage;
 	private final SuzukiMutex mutex;
-	
+
 	public TokenHandler(Message clientMessage, DistributedMutex tokenMutex) {
 		this.clientMessage = clientMessage;
 		this.mutex = (SuzukiMutex) tokenMutex;
@@ -19,7 +25,7 @@ public class TokenHandler implements MessageHandler {
 	
 	@Override
 	public void run() {
-		if(MessageType.TOKEN == clientMessage.getMessageType()) {
+		if(clientMessage.getMessageType() == MessageType.TOKEN) {
 			if (clientMessage.getReceiverInfo().getId() == AppConfig.myServentInfo.getId()) {
 				mutex.setTokenActive(true);
 			}

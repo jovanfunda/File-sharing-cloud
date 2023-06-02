@@ -52,6 +52,7 @@ public class RemoveFileCommand implements CLICommand {
             oldFiles.remove(fileName);
             AppConfig.serventFiles.put(AppConfig.myServentInfo.getId(), oldFiles);
 
+
             for(ServentInfo s : AppConfig.serventInfoList) {
                 if (s != AppConfig.myServentInfo) {
                     UpdateSystemMessage message = new UpdateSystemMessage(AppConfig.myServentInfo, AppConfig.getInfoById(s.getId()));
@@ -69,6 +70,8 @@ public class RemoveFileCommand implements CLICommand {
             }
 
             AppConfig.timestampedStandardPrint("File " + fileName + " successfully removed");
+
+            ((SuzukiMutex) mutex).systemUpdatedMessagesReceived.set(0);
             mutex.unlock();
 
         } else {

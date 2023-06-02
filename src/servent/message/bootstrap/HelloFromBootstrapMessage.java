@@ -4,6 +4,8 @@ import app.ServentInfo;
 import app.bootstrap.BootstrapNode;
 import servent.message.BasicMessage;
 import servent.message.MessageType;
+import servent.message.file.PullFileMessage;
+import servent.message.hello.HelloFromNodeMessage;
 
 public class HelloFromBootstrapMessage extends BasicMessage {
 
@@ -20,5 +22,21 @@ public class HelloFromBootstrapMessage extends BasicMessage {
 
     public ServentInfo getWhoToMessageInfo() {
         return whoToMessageInfo;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof HelloFromBootstrapMessage other) {
+
+            boolean messageId = getMessageId() == other.getMessageId();
+            boolean id = getOriginalSenderInfo().getId() == other.getOriginalSenderInfo().getId();
+            boolean port = getOriginalSenderInfo().getListenerPort() == other.getOriginalSenderInfo().getListenerPort();
+            boolean serventValue = getReceiverInfo().equals(other.getReceiverInfo());
+
+            return messageId && id && port && serventValue;
+
+        }
+
+        return false;
     }
 }

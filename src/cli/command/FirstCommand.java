@@ -8,7 +8,7 @@ public class FirstCommand implements CLICommand {
 
     @Override
     public String commandName() {
-        return "first";
+        return "[";
     }
 
     @Override

@@ -102,7 +102,7 @@ public class AppConfig {
 					} else if (i == 1) {
 						myNewNeighbors.add(serventInfoList.get(0).getId());
 						myNewNeighbors.add(serventInfoList.get(serventInfoList.size() - 1).getId());
-					} else if (i == 0) {
+					} else {
 						myNewNeighbors.add(serventInfoList.get(serventInfoList.size() - 1).getId());
 						myNewNeighbors.add(serventInfoList.get(serventInfoList.size() - 2).getId());
 					}

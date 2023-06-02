@@ -4,11 +4,15 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.util.Collections;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import app.AppConfig;
 import app.Cancellable;
+import app.ServentInfo;
 import mutex.DistributedMutex;
 import servent.handler.*;
 import servent.handler.file.PullFileHandler;
@@ -16,6 +20,9 @@ import servent.handler.file.SendFileHandler;
 import servent.handler.mutex.TokenHandler;
 import servent.handler.mutex.RequestTokenHandler;
 import servent.message.Message;
+import servent.message.MessageType;
+import servent.message.mutex.RequestTokenMessage;
+import servent.message.mutex.TokenMessage;
 import servent.message.util.MessageUtil;
 
 public class SimpleServentListener implements Runnable, Cancellable {
@@ -24,6 +31,8 @@ public class SimpleServentListener implements Runnable, Cancellable {
 	
 	private DistributedMutex mutex;
 	private int portNumber;
+
+	private static final Set<Message> receivedMessages = Collections.newSetFromMap(new ConcurrentHashMap<Message, Boolean>());
 
 	public SimpleServentListener(int portNumber, DistributedMutex mutex) {
 		this.mutex = mutex;
@@ -55,45 +64,58 @@ public class SimpleServentListener implements Runnable, Cancellable {
 				
 				//GOT A MESSAGE! <3
 				Message clientMessage = MessageUtil.readMessage(clientSocket);
-				
-				MessageHandler messageHandler = new NullHandler(clientMessage);
 
-				switch (clientMessage.getMessageType()) {
-					case HELLO_FROM_BOOTSTRAP:
-						messageHandler = new HelloFromBootstrapHandler(clientMessage, mutex);
-						break;
-					case HELLO_TO_NODE:
-						messageHandler = new HelloToNodeHandler(clientMessage);
-						break;
-					case HELLO_FROM_NODE:
-						messageHandler = new HelloFromNodeHandler(clientMessage, mutex);
-						break;
-					case REQUEST_TOKEN:
-						messageHandler = new RequestTokenHandler(clientMessage, mutex);
-						break;
-					case TOKEN:
-						messageHandler = new TokenHandler(clientMessage, mutex);
-						break;
-					case UPDATE_SYSTEM:
-						messageHandler = new UpdateSystemHandler(clientMessage, mutex);
-						break;
-					case SYSTEM_UPDATED:
-						messageHandler = new SystemUpdatedHandler(clientMessage, mutex);
-						break;
-					case PULL_FILE:
-						messageHandler = new PullFileHandler(clientMessage);
-						break;
-					case SEND_FILE:
-						messageHandler = new SendFileHandler(clientMessage);
-						break;
+				boolean didPut = receivedMessages.add(clientMessage);
+
+				if (didPut) {
+					AppConfig.timestampedStandardPrint("Prihvacena poruka " + clientMessage);
+
+					if (clientMessage.getReceiverInfo().getId() != AppConfig.myServentInfo.getId()) {
+						MessageUtil.sendMessage(clientMessage);
+						continue;
+					}
+
+					MessageHandler messageHandler = new NullHandler(clientMessage);
+
+					switch (clientMessage.getMessageType()) {
+						case HELLO_FROM_BOOTSTRAP:
+							messageHandler = new HelloFromBootstrapHandler(clientMessage, mutex);
+							break;
+						case HELLO_TO_NODE:
+							messageHandler = new HelloToNodeHandler(clientMessage, mutex);
+							break;
+						case HELLO_FROM_NODE:
+							messageHandler = new HelloFromNodeHandler(clientMessage, mutex);
+							break;
+						case REQUEST_TOKEN:
+							messageHandler = new RequestTokenHandler(clientMessage, mutex);
+							break;
+						case TOKEN:
+							messageHandler = new TokenHandler(clientMessage, mutex);
+							break;
+						case UPDATE_SYSTEM:
+							messageHandler = new UpdateSystemHandler(clientMessage, mutex);
+							break;
+						case SYSTEM_UPDATED:
+							messageHandler = new SystemUpdatedHandler(clientMessage, mutex);
+							break;
+						case PULL_FILE:
+							messageHandler = new PullFileHandler(clientMessage);
+							break;
+						case SEND_FILE:
+							messageHandler = new SendFileHandler(clientMessage);
+							break;
+					}
+
+					threadPool.submit(messageHandler);
+				} else {
+					AppConfig.timestampedStandardPrint("Poruka vec procitana " + clientMessage);
 				}
-				
-				threadPool.submit(messageHandler);
 			} catch (SocketTimeoutException timeoutEx) {
 				//Uncomment the next line to see that we are waking up every second.
-//				AppConfig.timedStandardPrint("Waiting...");
+//				AppConfig.timestampedStandardPrint("Waiting...");
 			} catch (IOException e) {
-				e.printStackTrace();
+				AppConfig.timestampedErrorPrint("greska simple " + e.getMessage());
 			}
 		}
 	}
