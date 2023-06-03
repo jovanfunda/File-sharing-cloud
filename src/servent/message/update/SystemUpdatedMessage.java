@@ -15,7 +15,7 @@ public class SystemUpdatedMessage extends BasicMessage {
     }
 
     public SystemUpdatedMessage(ServentInfo originalSenderInfo, ServentInfo receiverInfo, int messageId) {
-        super(MessageType.SYSTEM_UPDATED, originalSenderInfo, receiverInfo, "", messageId);
+        super(MessageType.SYSTEM_UPDATED, originalSenderInfo, receiverInfo, messageId);
     }
 
     @Override

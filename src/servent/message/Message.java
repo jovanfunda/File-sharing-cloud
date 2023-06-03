@@ -49,11 +49,6 @@ public interface Message extends Serializable {
 	MessageType getMessageType();
 	
 	/**
-	 * The body of the message. Use this to see what your neighbors have sent you.
-	 */
-	String getMessageText();
-	
-	/**
 	 * An id that is unique per servent. Combined with servent id, it will be unique
 	 * in the system.
 	 */

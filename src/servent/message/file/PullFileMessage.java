@@ -20,7 +20,7 @@ public class PullFileMessage extends BasicMessage {
     }
 
     public PullFileMessage(ServentInfo originalSenderInfo, ServentInfo receiverInfo, String fileName, int messageId) {
-        super(MessageType.PULL_FILE, originalSenderInfo, receiverInfo, "", messageId);
+        super(MessageType.PULL_FILE, originalSenderInfo, receiverInfo, messageId);
         this.fileName = fileName;
     }
 

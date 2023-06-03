@@ -2,7 +2,6 @@ package mutex;
 
 import app.AppConfig;
 import app.ServentInfo;
-import servent.message.Message;
 import servent.message.mutex.RequestTokenMessage;
 import servent.message.mutex.TokenMessage;
 import servent.message.util.MessageUtil;
@@ -30,7 +29,7 @@ public class SuzukiMutex implements DistributedMutex {
 
     public List<Integer> requestsReceived;
 
-    public static final AtomicInteger sequenceNumber = new AtomicInteger(0);
+    public static final AtomicInteger sequenceNumber = new AtomicInteger(1);
 
     public SuzukiMutex() {
         requestsReceived = new CopyOnWriteArrayList<>();
@@ -43,22 +42,17 @@ public class SuzukiMutex implements DistributedMutex {
 
         usingToken = true;
 
-        if(!haveToken) {
-            int num = -1;
+        int num = -1;
 
-            // Jos uvek nismo prikljuceni u arhitekturu i nemamo listu cvorova
-            if(requestsReceived.size() == 0 && finishedRequests.size() == 0) {
-                MessageUtil.sendMessage(new RequestTokenMessage(AppConfig.myServentInfo, nodeWithInfo, num));
+        // Jos uvek nismo prikljuceni u arhitekturu i nemamo listu cvorova, i ako nismo prvi node, jer on nema nodeWithInfo
+        if(requestsReceived.size() == 0 && finishedRequests.size() == 0 && AppConfig.serventInfoList.size() != 0) {
+            MessageUtil.sendMessage(new RequestTokenMessage(AppConfig.myServentInfo, nodeWithInfo, num));
+        } else if (AppConfig.serventInfoList.size() != 0) {
+            num = sequenceNumber.addAndGet(1);
 
-            } else {
-                num = sequenceNumber.addAndGet(1);
-
-//                Message requestMessage = new RequestTokenMessage(AppConfig.myServentInfo, AppConfig.myServentInfo, num);
-                for (ServentInfo s : AppConfig.getServentInfoList()) {
-                    if(s != AppConfig.myServentInfo) {
-//                        requestMessage = requestMessage.changeReceiver(s.getId());
-                        MessageUtil.sendMessage(new RequestTokenMessage(AppConfig.myServentInfo, s, num));
-                    }
+            for (ServentInfo s : AppConfig.serventInfoList) {
+                if(s != AppConfig.myServentInfo) {
+                    MessageUtil.sendMessage(new RequestTokenMessage(AppConfig.myServentInfo, s, num));
                 }
             }
         }
@@ -80,6 +74,9 @@ public class SuzukiMutex implements DistributedMutex {
         usingToken = false;
         finishedRequests.set(AppConfig.myServentInfo.getId(), requestsReceived.get(AppConfig.myServentInfo.getId()));
 
+        finishedRequests.set(AppConfig.myServentInfo.getId(), finishedRequests.get(AppConfig.myServentInfo.getId()) + 1);
+        requestsReceived.set(AppConfig.myServentInfo.getId(), requestsReceived.get(AppConfig.myServentInfo.getId()) + 1);
+
         // ukoliko postoji novi node, bolje posalji njemu token poruku ovde
         if(newNodeWaiting != null) {
             AppConfig.timestampedStandardPrint("Token saljem novom nodu");
@@ -92,6 +89,7 @@ public class SuzukiMutex implements DistributedMutex {
             for (int i = 0; i < requestsReceived.size(); i++) {
                 if (finishedRequests.get(i) + 1 == requestsReceived.get(i)) {
                     if (!serventsWaiting.contains(AppConfig.getInfoById(i))) {
+                        AppConfig.timestampedErrorPrint("Lock, ubacio sam " + AppConfig.getInfoById(i) + " u Q");
                         serventsWaiting.add(AppConfig.getInfoById(i));
                     }
                 }

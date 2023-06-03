@@ -25,7 +25,7 @@ public class TokenMessage extends BasicMessage {
 	}
 
 	public TokenMessage(ServentInfo sender, ServentInfo receiver, Queue<ServentInfo> serventsWaiting, int messageId) {
-		super(MessageType.TOKEN, sender, receiver, "", messageId);
+		super(MessageType.TOKEN, sender, receiver, messageId);
 		this.serventsWaiting = serventsWaiting;
 	}
 

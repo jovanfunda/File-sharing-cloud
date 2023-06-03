@@ -18,7 +18,6 @@ public class BasicMessage implements Message {
 	private final MessageType type;
 	private final ServentInfo originalSenderInfo;
 	private final ServentInfo receiverInfo;
-	private final String messageText;
 
 	private static final AtomicInteger messageCounter = new AtomicInteger(0);
 	private final int messageId;
@@ -27,26 +26,14 @@ public class BasicMessage implements Message {
 		this.type = type;
 		this.originalSenderInfo = originalSenderInfo;
 		this.receiverInfo = receiverInfo;
-		this.messageText = "";
-		
-		this.messageId = messageCounter.getAndIncrement();
-	}
-	
-	public BasicMessage(MessageType type, ServentInfo originalSenderInfo, ServentInfo receiverInfo,
-			String messageText) {
-		this.type = type;
-		this.originalSenderInfo = originalSenderInfo;
-		this.receiverInfo = receiverInfo;
-		this.messageText = messageText;
 		
 		this.messageId = messageCounter.getAndIncrement();
 	}
 
-	public BasicMessage(MessageType type, ServentInfo originalSenderInfo, ServentInfo receiverInfo, String messageText, int messageId) {
+	public BasicMessage(MessageType type, ServentInfo originalSenderInfo, ServentInfo receiverInfo, int messageId) {
 		this.type = type;
 		this.originalSenderInfo = originalSenderInfo;
 		this.receiverInfo = receiverInfo;
-		this.messageText = messageText;
 
 		this.messageId = messageId;
 	}
@@ -67,11 +54,6 @@ public class BasicMessage implements Message {
 	}
 	
 	@Override
-	public String getMessageText() {
-		return messageText;
-	}
-	
-	@Override
 	public int getMessageId() {
 		return messageId;
 	}
@@ -85,7 +67,7 @@ public class BasicMessage implements Message {
 			ServentInfo newReceiverInfo = AppConfig.getInfoById(newReceiverId);
 
 			Message toReturn = new BasicMessage(getMessageType(), getOriginalSenderInfo(),
-					newReceiverInfo, getMessageText(), getMessageId());
+					newReceiverInfo, getMessageId());
 
 			return toReturn;
 	}
@@ -121,8 +103,8 @@ public class BasicMessage implements Message {
 	 */
 	@Override
 	public String toString() {
-		return "[" + getOriginalSenderInfo().getId() + "|" + getMessageId() + "|" +
-					getMessageText() + "|" + getMessageType() + "|" +
+		return "[" + getOriginalSenderInfo().getId() + "|" + getMessageId() + "|"
+				+ "|" + getMessageType() + "|" +
 					getReceiverInfo().getId() + "]";
 	}
 

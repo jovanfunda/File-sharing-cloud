@@ -22,7 +22,7 @@ public class SendFileMessage extends BasicMessage {
     }
 
     public SendFileMessage(ServentInfo originalSenderInfo, ServentInfo receiverInfo, byte[] fileInputStream, String fileName, int messageId) {
-        super(MessageType.SEND_FILE, originalSenderInfo, receiverInfo, "", messageId);
+        super(MessageType.SEND_FILE, originalSenderInfo, receiverInfo, messageId);
         this.fileInputStream = fileInputStream;
         this.fileName = fileName;
     }

@@ -73,13 +73,7 @@ public class AddFileCommand implements CLICommand {
                         }
                     }
 
-//                    try {
-//                        AppConfig.timestampedStandardPrint("Pre slipa");
-//                        Thread.sleep(2000);
-//                        AppConfig.timestampedStandardPrint("posle slipa");
-//                    } catch (InterruptedException e) {
-//                        throw new RuntimeException(e);
-//                    }
+                    ((SuzukiMutex) mutex).systemUpdatedMessagesReceived.set(0);
 
                     mutex.unlock();
                 } catch (FileAlreadyExistsException e) {
@@ -101,9 +95,9 @@ public class AddFileCommand implements CLICommand {
                         AppConfig.timestampedStandardPrint("Successfully copied " + file.getName());
                         newFiles.add(file.getName());
 
-                        List<String> oldList = AppConfig.serventFiles.get(AppConfig.myServentInfo.getId());
-                        oldList.add(file.getName());
-                        AppConfig.serventFiles.put(AppConfig.myServentInfo.getId(), oldList);
+                        List<String> newList = new ArrayList<>(AppConfig.serventFiles.get(AppConfig.myServentInfo.getId()));
+                        newList.add(file.getName());
+                        AppConfig.serventFiles.put(AppConfig.myServentInfo.getId(), newList);
 
                     } catch (FileAlreadyExistsException e) {
                         AppConfig.timestampedErrorPrint("File " + file.getName() + "from " + fileName + "folder already exists!");
@@ -130,15 +124,8 @@ public class AddFileCommand implements CLICommand {
                         throw new RuntimeException(e);
                     }
                 }
-                ((SuzukiMutex) mutex).systemUpdatedMessagesReceived.set(0);
 
-//                try {
-//                    AppConfig.timestampedStandardPrint("Pre slipa");
-//                    Thread.sleep(2000);
-//                    AppConfig.timestampedStandardPrint("posle slipa");
-//                } catch (InterruptedException e) {
-//                    throw new RuntimeException(e);
-//                }
+                ((SuzukiMutex) mutex).systemUpdatedMessagesReceived.set(0);
 
                 mutex.unlock();
             } else {

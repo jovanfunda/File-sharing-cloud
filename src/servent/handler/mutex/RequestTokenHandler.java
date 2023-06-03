@@ -50,14 +50,19 @@ public class RequestTokenHandler implements MessageHandler {
             }
 
             if (((SuzukiMutex) mutex).requestsReceived.get(clientMessage.getOriginalSenderInfo().getId()) <= ((RequestTokenMessage) clientMessage).sequenceCounter) {
+                AppConfig.timestampedErrorPrint("req " + clientMessage.getOriginalSenderInfo().getId() + " " + ((RequestTokenMessage) clientMessage).sequenceCounter);
                 ((SuzukiMutex) mutex).requestsReceived.set(clientMessage.getOriginalSenderInfo().getId(), ((RequestTokenMessage) clientMessage).sequenceCounter);
+            }
+
+            // if za zastareo zahtev
+            if(((SuzukiMutex) mutex).requestsReceived.get(clientMessage.getOriginalSenderInfo().getId()) > ((RequestTokenMessage) clientMessage).sequenceCounter) {
+                return;
             }
 
             if (((SuzukiMutex) mutex).hasToken() && !((SuzukiMutex) mutex).usingToken) {
                 ((SuzukiMutex) mutex).setTokenActive(false);
                 TokenMessage tokenMessage = new TokenMessage(AppConfig.myServentInfo, clientMessage.getOriginalSenderInfo(), ((SuzukiMutex) mutex).serventsWaiting);
                 tokenMessage.finishedRequests = ((SuzukiMutex) mutex).finishedRequests;
-//                tokenMessage.serventsWaiting.poll(); ??
                 AppConfig.timestampedStandardPrint("Saljem poruku ka " + clientMessage.getOriginalSenderInfo().getId());
                 MessageUtil.sendMessage(tokenMessage);
             }

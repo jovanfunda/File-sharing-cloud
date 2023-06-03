@@ -11,6 +11,7 @@ import servent.message.util.MessageUtil;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 public class RemoveFileCommand implements CLICommand {
@@ -41,22 +42,24 @@ public class RemoveFileCommand implements CLICommand {
 
         if(found) {
             mutex.lock();
+            List<String> removedFiles = new ArrayList<>();
 
             try {
                 Files.delete(Path.of("directory" + AppConfig.myServentInfo.getId() + "\\" + fileName));
+                removedFiles.add(fileName);
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                AppConfig.timestampedErrorPrint("File with name " + fileName + " does not exist.");
             }
 
-            List<String> oldFiles = AppConfig.serventFiles.get(AppConfig.myServentInfo.getId());
-            oldFiles.remove(fileName);
-            AppConfig.serventFiles.put(AppConfig.myServentInfo.getId(), oldFiles);
+            List<String> newFiles = new ArrayList<>(AppConfig.serventFiles.get(AppConfig.myServentInfo.getId()));
+            newFiles.remove(fileName);
+            AppConfig.serventFiles.put(AppConfig.myServentInfo.getId(), newFiles);
 
 
             for(ServentInfo s : AppConfig.serventInfoList) {
                 if (s != AppConfig.myServentInfo) {
                     UpdateSystemMessage message = new UpdateSystemMessage(AppConfig.myServentInfo, AppConfig.getInfoById(s.getId()));
-                    message.removedFiles = oldFiles;
+                    message.removedFiles = removedFiles;
                     MessageUtil.sendMessage(message);
                 }
             }

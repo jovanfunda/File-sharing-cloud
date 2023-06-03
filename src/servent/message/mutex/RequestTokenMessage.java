@@ -16,7 +16,7 @@ public class RequestTokenMessage extends BasicMessage {
     }
 
     public RequestTokenMessage(ServentInfo originalSenderInfo, ServentInfo receiverInfo, int sequenceNumber, int messageId) {
-        super(MessageType.REQUEST_TOKEN, originalSenderInfo, receiverInfo, "", messageId);
+        super(MessageType.REQUEST_TOKEN, originalSenderInfo, receiverInfo, messageId);
         sequenceCounter = sequenceNumber;
     }
 

@@ -39,6 +39,9 @@ public class UpdateSystemHandler implements MessageHandler {
                     ((SuzukiMutex) mutex).requestsReceived.add(0);
                     AppConfig.serventFiles.put(((UpdateSystemMessage) clientMessage).newNodeId, new ArrayList<>());
 
+                    ((SuzukiMutex) mutex).finishedRequests.set(((UpdateSystemMessage) clientMessage).newNodeId, 1);
+                    ((SuzukiMutex) mutex).requestsReceived.set(((UpdateSystemMessage) clientMessage).newNodeId, 1);
+
                 } else if (((UpdateSystemMessage) clientMessage).newFiles.size() != 0) {
 
                     List<String> filesThatIHave = AppConfig.serventFiles.get(AppConfig.myServentInfo.getId());
@@ -60,16 +63,13 @@ public class UpdateSystemHandler implements MessageHandler {
 
                 } else if (((UpdateSystemMessage) clientMessage).removedFiles.size() != 0) {
 
-                    List<String> filesThatIHave = AppConfig.serventFiles.get(AppConfig.myServentInfo.getId());
-
-                    List<String> removedFilesList = new ArrayList<>(AppConfig.serventFiles.get(clientMessage.getOriginalSenderInfo().getId()));
+                    List<String> newFilesList = new ArrayList<>(AppConfig.serventFiles.get(clientMessage.getOriginalSenderInfo().getId()));
 
                     for(String fileName : ((UpdateSystemMessage) clientMessage).removedFiles) {
-                        if(filesThatIHave.contains(fileName)) {
-                            removedFilesList.remove(fileName);
-                        }
+                        newFilesList.remove(fileName);
                     }
-                    AppConfig.serventFiles.put(clientMessage.getOriginalSenderInfo().getId(), removedFilesList);
+
+                    AppConfig.serventFiles.put(clientMessage.getOriginalSenderInfo().getId(), newFilesList);
 
                     ((UpdateSystemMessage) clientMessage).removedFiles = new ArrayList<>();
 

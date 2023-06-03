@@ -27,7 +27,7 @@ public class UpdateSystemMessage extends BasicMessage {
     }
 
     public UpdateSystemMessage(ServentInfo originalSenderInfo, ServentInfo receiverInfo, int newNodeId, int messageId) {
-        super(MessageType.UPDATE_SYSTEM, originalSenderInfo, receiverInfo, "", messageId);
+        super(MessageType.UPDATE_SYSTEM, originalSenderInfo, receiverInfo, messageId);
         this.newNodeId = newNodeId;
     }
 
