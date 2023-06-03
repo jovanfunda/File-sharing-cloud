@@ -47,6 +47,7 @@ public class SuzukiMutex implements DistributedMutex {
         // Jos uvek nismo prikljuceni u arhitekturu i nemamo listu cvorova, i ako nismo prvi node, jer on nema nodeWithInfo
         if(requestsReceived.size() == 0 && finishedRequests.size() == 0 && AppConfig.serventInfoList.size() != 0) {
             MessageUtil.sendMessage(new RequestTokenMessage(AppConfig.myServentInfo, nodeWithInfo, num));
+        // Ako nismo prvi node, jer ne zelimo da povecam
         } else if (AppConfig.serventInfoList.size() != 0) {
             num = sequenceNumber.addAndGet(1);
 
