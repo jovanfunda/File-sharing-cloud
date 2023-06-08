@@ -29,6 +29,8 @@ public class SuzukiMutex implements DistributedMutex {
 
     public AtomicInteger systemUpdatedMessagesReceived = new AtomicInteger(0);
 
+    public AtomicInteger requestsTokenReceived = new AtomicInteger(0);
+
     public List<Integer> requestsReceived;
 
     public static final AtomicInteger sequenceNumber = new AtomicInteger(1);
@@ -47,6 +49,7 @@ public class SuzukiMutex implements DistributedMutex {
         usingToken = true;
 
         int num = -1;
+        requestsTokenReceived.set(0);
 
         // Jos uvek nismo prikljuceni u arhitekturu i nemamo listu cvorova, i ako nismo prvi node, jer on nema nodeWithInfo
         if(requestsReceived.size() == 0 && finishedRequests.size() == 0 && AppConfig.serventInfoList.size() != 0) {
@@ -67,6 +70,10 @@ public class SuzukiMutex implements DistributedMutex {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
                 e.printStackTrace();
+            }
+            // Specijalni slucaj, ukoliko smo dobili poruku od svih a niko nema token
+            if(requestsTokenReceived.get() == AppConfig.serventInfoList.size()-1) {
+                haveToken = true;
             }
         }
 

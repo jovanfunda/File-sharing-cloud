@@ -20,6 +20,7 @@ import servent.handler.buddySystem.PongHandler;
 import servent.handler.file.PullFileHandler;
 import servent.handler.file.SendFileHandler;
 import servent.handler.mutex.FirstRequestTokenHandler;
+import servent.handler.mutex.GotRequestHandler;
 import servent.handler.mutex.TokenHandler;
 import servent.handler.mutex.RequestTokenHandler;
 import servent.message.Message;
@@ -100,6 +101,9 @@ public class SimpleServentListener implements Runnable, Cancellable {
 							break;
 						case FIRST_REQUEST:
 							messageHandler = new FirstRequestTokenHandler(clientMessage, mutex);
+							break;
+						case GOT_REQUEST:
+							messageHandler = new GotRequestHandler(clientMessage, mutex);
 							break;
 						case UPDATE_SYSTEM:
 							messageHandler = new UpdateSystemHandler(clientMessage, mutex);

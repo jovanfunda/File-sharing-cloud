@@ -6,7 +6,9 @@ import mutex.DistributedMutex;
 import mutex.SuzukiMutex;
 import servent.handler.MessageHandler;
 import servent.message.Message;
+import servent.message.MessageType;
 import servent.message.mutex.FirstRequestTokenMessage;
+import servent.message.mutex.GotRequestMessage;
 import servent.message.mutex.RequestTokenMessage;
 import servent.message.mutex.TokenMessage;
 import servent.message.util.MessageUtil;
@@ -29,6 +31,8 @@ public class RequestTokenHandler implements MessageHandler {
     public void run() {
 
         if(clientMessage.getReceiverInfo().getId() == AppConfig.myServentInfo.getId()) {
+
+            MessageUtil.sendMessage(new GotRequestMessage(AppConfig.myServentInfo, clientMessage.getOriginalSenderInfo()));
 
             // Ukoliko mi je cvor koji nije u arhitekturi poslao zahtev preko FirstTokenRequesta
             if(clientMessage.getOriginalSenderInfo().getId() == -1) {

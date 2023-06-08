@@ -6,6 +6,7 @@ import mutex.DistributedMutex;
 import mutex.SuzukiMutex;
 import servent.handler.MessageHandler;
 import servent.message.Message;
+import servent.message.mutex.GotRequestMessage;
 import servent.message.mutex.RequestTokenMessage;
 import servent.message.mutex.TokenMessage;
 import servent.message.util.MessageUtil;
@@ -22,6 +23,9 @@ public class FirstRequestTokenHandler implements MessageHandler {
 
     @Override
     public void run() {
+
+        MessageUtil.sendMessage(new GotRequestMessage(AppConfig.myServentInfo, clientMessage.getOriginalSenderInfo()));
+
         if (((SuzukiMutex) mutex).hasToken() && ((SuzukiMutex) mutex).usingToken) {
             ((SuzukiMutex) mutex).newNodeWaiting = clientMessage.getOriginalSenderInfo();
         } else if (((SuzukiMutex) mutex).hasToken() && !((SuzukiMutex) mutex).usingToken) {
