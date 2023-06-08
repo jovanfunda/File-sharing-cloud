@@ -5,9 +5,6 @@ import app.ServentInfo;
 import servent.message.BasicMessage;
 import servent.message.Message;
 import servent.message.MessageType;
-import servent.message.update.SystemUpdatedMessage;
-
-import java.util.Objects;
 
 
 public class SendFileMessage extends BasicMessage {

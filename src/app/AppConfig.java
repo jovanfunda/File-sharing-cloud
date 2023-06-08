@@ -1,7 +1,16 @@
 package app;
 
 import servent.message.Message;
+import servent.message.file.CreateBackupMessage;
+import servent.message.util.MessageUtil;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -131,5 +140,56 @@ public class AppConfig {
 		}
 		int previousNodeId = (id-1);
 		return previousNodeId >= 0 ? serventInfoList.get(id-1) : serventInfoList.get(serventInfoList.size()-1);
+	}
+
+	public static void doBackup(ServentInfo backupFrom) {
+
+		List<String> filesToBackup = serventFiles.get(backupFrom.getId());
+
+		File directory = new File("directory" + myServentInfo.getId());
+		if (!directory.exists())
+			directory.mkdir();
+
+		File backupDirectory = new File("Backup" + myServentInfo.getId());
+
+		for(String backupFile : Objects.requireNonNull(backupDirectory.list())) {
+			if(filesToBackup.contains(backupFile)) {
+				Path sourcePath = Path.of("Backup" + myServentInfo.getId() + "\\" + backupFile);
+				Path destinationPath = Path.of("directory" + myServentInfo.getId() + "\\" + backupFile);
+
+				try {
+					Files.copy(sourcePath, destinationPath);
+					System.out.println("File retrieved successfully.");
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+		File[] files = backupDirectory.listFiles();
+		assert files != null;
+		for (File file : files) {
+			file.delete();
+		}
+
+		serventFiles.put(backupFrom.getId(), new ArrayList<>());
+		List<String> allFiles = serventFiles.get(myServentInfo.getId());
+		allFiles.addAll(filesToBackup);
+		serventFiles.put(myServentInfo.getId(), allFiles);
+
+		// saljemo cvoru iza nas da uradi backup novih fajlova
+		CreateBackupMessage message = new CreateBackupMessage(myServentInfo, previousNode(myServentInfo));
+		for(String file : filesToBackup) {
+			FileInputStream fileInputStream = null;
+			try {
+				fileInputStream = new FileInputStream("directory" + myServentInfo.getId() + "\\" + file);
+				byte[] fileContent = fileInputStream.readAllBytes();
+				message.backupFiles.put(file, fileContent);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+		}
+
+		MessageUtil.sendMessage(message);
 	}
 }

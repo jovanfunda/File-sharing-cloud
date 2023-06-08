@@ -14,6 +14,7 @@ import servent.handler.*;
 import servent.handler.bootstrap.NewNodeToBootstrapHandler;
 import servent.handler.bootstrap.RemoveNodeToBootstrapHandler;
 import servent.handler.buddySystem.*;
+import servent.handler.file.CreateBackupHandler;
 import servent.handler.file.PullFileHandler;
 import servent.handler.file.SendFileHandler;
 import servent.handler.hello.HelloFromBootstrapHandler;
@@ -114,6 +115,9 @@ public class SimpleServentListener implements Runnable, Cancellable {
 							break;
 						case SEND_FILE:
 							messageHandler = new SendFileHandler(clientMessage);
+							break;
+						case CREATE_BACKUP:
+							messageHandler = new CreateBackupHandler(clientMessage);
 							break;
 						case PING:
 							messageHandler = new PingHandler(clientMessage);

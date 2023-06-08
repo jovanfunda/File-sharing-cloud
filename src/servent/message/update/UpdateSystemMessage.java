@@ -7,7 +7,9 @@ import servent.message.Message;
 import servent.message.MessageType;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class UpdateSystemMessage extends BasicMessage {
 
@@ -18,6 +20,8 @@ public class UpdateSystemMessage extends BasicMessage {
     public List<String> removedFiles = new ArrayList<>();
 
     public ServentInfo serventThatFailed = null;
+
+    public Map<Integer, List<String>> serventFiles = new HashMap<>();
 
     public UpdateSystemMessage(ServentInfo originalSenderInfo, ServentInfo receiverInfo) {
         super(MessageType.UPDATE_SYSTEM, originalSenderInfo, receiverInfo);

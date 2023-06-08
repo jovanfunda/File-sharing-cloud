@@ -5,10 +5,6 @@ import app.ServentInfo;
 import servent.message.BasicMessage;
 import servent.message.Message;
 import servent.message.MessageType;
-import servent.message.mutex.RequestTokenMessage;
-import servent.message.update.SystemUpdatedMessage;
-
-import java.util.Objects;
 
 public class PullFileMessage extends BasicMessage {
 
@@ -29,7 +25,7 @@ public class PullFileMessage extends BasicMessage {
         ServentInfo newReceiverInfo = AppConfig.getInfoById(newReceiverId);
 
         return new PullFileMessage(getOriginalSenderInfo(),
-                newReceiverInfo, "", getMessageId());
+                newReceiverInfo, fileName, getMessageId());
     }
 
     @Override

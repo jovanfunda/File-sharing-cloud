@@ -75,11 +75,14 @@ public class BuddySystem implements Runnable, Cancellable {
 
                         AppConfig.reorganizeArchitecture();
 
+                        AppConfig.doBackup(nextNode);
+
                         for(ServentInfo servent : AppConfig.serventInfoList) {
                             Message message = new UpdateSystemMessage(AppConfig.myServentInfo, servent);
                             if(servent != AppConfig.myServentInfo) {
                                 message = message.changeReceiver(servent.getId());
                                 ((UpdateSystemMessage) message).serventThatFailed = nextNode;
+                                ((UpdateSystemMessage) message).serventFiles = AppConfig.serventFiles;
                                 MessageUtil.sendMessage(message);
                             }
                         }

@@ -98,6 +98,8 @@ public class UpdateSystemHandler implements MessageHandler {
                     ((SuzukiMutex) mutex).finishedRequests.set(clientMessage.getOriginalSenderInfo().getId(), prevFinishedRequest + 1);
                 } else if (((UpdateSystemMessage) clientMessage).serventThatFailed != null) {
 
+                    AppConfig.serventFiles = ((UpdateSystemMessage) clientMessage).serventFiles;
+
                     AppConfig.gotPong = true;
 
                     ServentInfo serventThatFailed = ((UpdateSystemMessage) clientMessage).serventThatFailed;
