@@ -6,6 +6,8 @@ import mutex.DistributedMutex;
 import mutex.SuzukiMutex;
 import servent.message.Message;
 import servent.message.MessageType;
+import servent.message.hello.NewNodeToBootstrapMessage;
+import servent.message.hello.RemoveNodeToBootstrapMessage;
 import servent.message.update.SystemUpdatedMessage;
 import servent.message.update.UpdateSystemMessage;
 import servent.message.util.MessageUtil;
@@ -101,6 +103,10 @@ public class UpdateSystemHandler implements MessageHandler {
 
                     int prevFinishedRequest = ((SuzukiMutex) mutex).finishedRequests.get(clientMessage.getOriginalSenderInfo().getId());
                     ((SuzukiMutex) mutex).finishedRequests.set(clientMessage.getOriginalSenderInfo().getId(), prevFinishedRequest + 1);
+
+                    RemoveNodeToBootstrapMessage message = new RemoveNodeToBootstrapMessage(AppConfig.myServentInfo, AppConfig.getBootstrapNode());
+                    message.removedNode = serventThatFailed;
+                    MessageUtil.sendMessage(message);
                 }
 
                 SystemUpdatedMessage message = new SystemUpdatedMessage(AppConfig.myServentInfo, clientMessage.getOriginalSenderInfo());

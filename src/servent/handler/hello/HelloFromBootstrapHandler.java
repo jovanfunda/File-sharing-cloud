@@ -1,13 +1,15 @@
-package servent.handler;
+package servent.handler.hello;
 
 import app.AppConfig;
 import app.ServentInfo;
 import mutex.DistributedMutex;
 import mutex.SuzukiMutex;
+import servent.handler.MessageHandler;
 import servent.message.hello.HelloToNodeMessage;
 import servent.message.Message;
 import servent.message.MessageType;
 import servent.message.bootstrap.HelloFromBootstrapMessage;
+import servent.message.hello.NewNodeToBootstrapMessage;
 import servent.message.util.MessageUtil;
 
 import java.util.ArrayList;
@@ -43,6 +45,11 @@ public class HelloFromBootstrapHandler implements MessageHandler {
                 AppConfig.serventFiles.put(0, new ArrayList<>());
 
                 AppConfig.timestampedStandardPrint("Primljen sam u arhitekturu kao prvi cvor!");
+
+                // Saljemo poruku bootstrapu da imamo novi cvor u sistemu
+                NewNodeToBootstrapMessage message = new NewNodeToBootstrapMessage(AppConfig.myServentInfo, AppConfig.getBootstrapNode());
+                message.newNode = AppConfig.myServentInfo;
+                MessageUtil.sendMessage(message);
 
                 Thread buddySystemThread = new Thread(((SuzukiMutex) mutex).buddySystem);
                 buddySystemThread.start();

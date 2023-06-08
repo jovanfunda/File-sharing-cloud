@@ -1,8 +1,9 @@
-package servent.handler;
+package servent.handler.hello;
 
 import app.AppConfig;
 import mutex.DistributedMutex;
 import mutex.SuzukiMutex;
+import servent.handler.MessageHandler;
 import servent.message.hello.HelloFromNodeMessage;
 import servent.message.Message;
 import servent.message.MessageType;

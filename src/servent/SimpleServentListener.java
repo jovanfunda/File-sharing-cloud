@@ -4,29 +4,28 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
-import java.util.Collections;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import app.AppConfig;
 import app.Cancellable;
-import app.ServentInfo;
 import mutex.DistributedMutex;
 import servent.handler.*;
+import servent.handler.bootstrap.NewNodeToBootstrapHandler;
+import servent.handler.bootstrap.RemoveNodeToBootstrapHandler;
 import servent.handler.buddySystem.PingHandler;
 import servent.handler.buddySystem.PongHandler;
 import servent.handler.file.PullFileHandler;
 import servent.handler.file.SendFileHandler;
+import servent.handler.hello.HelloFromBootstrapHandler;
+import servent.handler.hello.HelloFromNodeHandler;
+import servent.handler.hello.HelloToNodeHandler;
 import servent.handler.mutex.FirstRequestTokenHandler;
 import servent.handler.mutex.GotRequestHandler;
 import servent.handler.mutex.TokenHandler;
 import servent.handler.mutex.RequestTokenHandler;
 import servent.message.Message;
 import servent.message.MessageType;
-import servent.message.mutex.RequestTokenMessage;
-import servent.message.mutex.TokenMessage;
 import servent.message.util.MessageUtil;
 
 public class SimpleServentListener implements Runnable, Cancellable {

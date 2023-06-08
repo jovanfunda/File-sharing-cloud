@@ -10,6 +10,8 @@ import java.util.concurrent.Executors;
 import servent.handler.MessageHandler;
 import servent.handler.NullHandler;
 import servent.handler.bootstrap.HelloToBootstrapHandler;
+import servent.handler.bootstrap.NewNodeToBootstrapHandler;
+import servent.handler.bootstrap.RemoveNodeToBootstrapHandler;
 import servent.message.Message;
 import servent.message.util.MessageUtil;
 
@@ -50,6 +52,12 @@ public class BootstrapListener implements Runnable {
                 switch (clientMessage.getMessageType()) {
                     case HELLO_TO_BOOTSTRAP:
                         messageHandler = new HelloToBootstrapHandler(clientMessage);
+                        break;
+                    case NEW_NODE_TO_BOOTSTRAP:
+                        messageHandler = new NewNodeToBootstrapHandler(clientMessage);
+                        break;
+                    case REMOVE_NODE_TO_BOOTSTRAP:
+                        messageHandler = new RemoveNodeToBootstrapHandler(clientMessage);
                         break;
                 }
 
