@@ -17,6 +17,8 @@ public class ServentMain {
 
 	public static void main(String[] args) {
 
+		Constants.appConfig();
+
 		if (args.length != 2) {
 			AppConfig.timestampedErrorPrint("Please provide ip address and port of this servent.");
 		}
