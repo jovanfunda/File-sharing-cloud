@@ -19,7 +19,7 @@ public class BasicMessage implements Message {
 	private final ServentInfo originalSenderInfo;
 	private final ServentInfo receiverInfo;
 
-	private static final AtomicInteger messageCounter = new AtomicInteger(0);
+	public static final AtomicInteger messageCounter = new AtomicInteger(0);
 	private final int messageId;
 	
 	public BasicMessage(MessageType type, ServentInfo originalSenderInfo, ServentInfo receiverInfo) {

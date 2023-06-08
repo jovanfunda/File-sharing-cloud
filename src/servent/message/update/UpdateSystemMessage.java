@@ -17,6 +17,8 @@ public class UpdateSystemMessage extends BasicMessage {
 
     public List<String> removedFiles = new ArrayList<>();
 
+    public ServentInfo serventThatFailed = null;
+
     public UpdateSystemMessage(ServentInfo originalSenderInfo, ServentInfo receiverInfo) {
         super(MessageType.UPDATE_SYSTEM, originalSenderInfo, receiverInfo);
     }

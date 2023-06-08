@@ -1,72 +1,47 @@
 package app;
 
+import servent.message.Message;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * This class contains all the global application configuration stuff.
- * @author bmilojkovic
- *
- */
 public class AppConfig {
 
-	/**
-	 * Convenience access for this servent's information
-	 */
 	public static ServentInfo myServentInfo;
 	
 	public static List<ServentInfo> serventInfoList = new ArrayList<>();
 
-	private static ServentInfo bootstrapNode = new ServentInfo("localhost", -1, 1000, new ArrayList<>());
+	private static final ServentInfo bootstrapNode = new ServentInfo("localhost", -1, 1000, new ArrayList<>());
 
 	public static Map<Integer, List<String>> serventFiles = new HashMap<>();
-	
-	/**
-	 * Print a message to stdout with a timestamp
-	 * @param message message to print
-	 */
+
+	public static final Set<Message> receivedMessages = Collections.newSetFromMap(new ConcurrentHashMap<Message, Boolean>());
+
+	public static boolean gotPong = false;
+
 	public static void timestampedStandardPrint(String message) {
 		DateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
 		Date now = new Date();
 		
 		System.out.println(timeFormat.format(now) + " - " + message);
 	}
-	
-	/**
-	 * Print a message to stderr with a timestamp
-	 * @param message message to print
-	 */
+
 	public static void timestampedErrorPrint(String message) {
 		DateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
 		Date now = new Date();
 		
 		System.err.println(timeFormat.format(now) + " - " + message);
 	}
-	
-	/**
-	 * Get info for a servent selected by a given id.
-	 * @param id id of servent to get info for
-	 * @return {@link ServentInfo} object for this id
-	 */
+
 	public static ServentInfo getInfoById(int id) {
-		if (id >= getServentCount()) {
-			throw new IllegalArgumentException(
-					"Trying to get info for servent " + id + " when there are " + getServentCount() + " servents.");
-		}
 		for(ServentInfo s : serventInfoList) {
 			if(s.getId() == id) {
 				return s;
 			}
 		}
 		return null;
-	}
-	
-	/**
-	 * Get number of servents in this system.
-	 */
-	public static int getServentCount() {
-		return serventInfoList.size();
 	}
 
 	public static void addServentInfo(ServentInfo newServent) {
@@ -125,5 +100,21 @@ public class AppConfig {
 
 		myNewNeighbors.remove(myServentInfo.getId());
 		AppConfig.myServentInfo.setNeighbors(myNewNeighbors.stream().toList());
+
+	}
+
+	public static ServentInfo nextNode() {
+		int id = -1;
+		for(int i = 0; i < serventInfoList.size(); i++) {
+			if(serventInfoList.get(i) == AppConfig.myServentInfo) {
+				id = i;
+				break;
+			}
+		}
+		if(id == -1) {
+			timestampedErrorPrint("Error in nextNode app config");
+		}
+		int nextNodeId = (id+1) % serventInfoList.size();
+		return serventInfoList.get(nextNodeId);
 	}
 }

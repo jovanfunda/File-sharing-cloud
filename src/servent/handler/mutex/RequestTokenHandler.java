@@ -6,6 +6,7 @@ import mutex.DistributedMutex;
 import mutex.SuzukiMutex;
 import servent.handler.MessageHandler;
 import servent.message.Message;
+import servent.message.mutex.FirstRequestTokenMessage;
 import servent.message.mutex.RequestTokenMessage;
 import servent.message.mutex.TokenMessage;
 import servent.message.util.MessageUtil;
@@ -29,42 +30,30 @@ public class RequestTokenHandler implements MessageHandler {
 
         if(clientMessage.getReceiverInfo().getId() == AppConfig.myServentInfo.getId()) {
 
+            // Ukoliko mi je cvor koji nije u arhitekturi poslao zahtev preko FirstTokenRequesta
             if(clientMessage.getOriginalSenderInfo().getId() == -1) {
-                if(((SuzukiMutex) mutex).hasToken() && ((SuzukiMutex) mutex).usingToken) {
-                    ((SuzukiMutex) mutex).newNodeWaiting = clientMessage.getOriginalSenderInfo();
-                } else if(((SuzukiMutex) mutex).hasToken() && !((SuzukiMutex) mutex).usingToken) {
+                if (((SuzukiMutex) mutex).hasToken() && !((SuzukiMutex) mutex).usingToken) {
                     ((SuzukiMutex) mutex).setTokenActive(false);
                     TokenMessage tokenMessage = new TokenMessage(AppConfig.myServentInfo, clientMessage.getOriginalSenderInfo(), ((SuzukiMutex) mutex).serventsWaiting);
                     tokenMessage.finishedRequests = ((SuzukiMutex) mutex).finishedRequests;
                     MessageUtil.sendMessage(tokenMessage);
-                } else {
-                    // Kada se novi cvor prikljucuje salje samo ovom nodu, pa ce ovaj node da prosledi dalje ukoliko nema token
-                    for (ServentInfo s : AppConfig.serventInfoList) {
-                        if (s != AppConfig.myServentInfo) {
-                            clientMessage = clientMessage.changeReceiver(s.getId());
-                            MessageUtil.sendMessage(clientMessage);
-                        }
-                    }
                 }
                 return;
             }
 
+            // Apdejtujemo nas request received u zavisnoti od poruke koje smo dobili
             if (((SuzukiMutex) mutex).requestsReceived.get(clientMessage.getOriginalSenderInfo().getId()) <= ((RequestTokenMessage) clientMessage).sequenceCounter) {
-                AppConfig.timestampedErrorPrint("req " + clientMessage.getOriginalSenderInfo().getId() + " " + ((RequestTokenMessage) clientMessage).sequenceCounter);
                 ((SuzukiMutex) mutex).requestsReceived.set(clientMessage.getOriginalSenderInfo().getId(), ((RequestTokenMessage) clientMessage).sequenceCounter);
             }
 
-            // if za zastareo zahtev
-            if(((SuzukiMutex) mutex).requestsReceived.get(clientMessage.getOriginalSenderInfo().getId()) > ((RequestTokenMessage) clientMessage).sequenceCounter) {
-                return;
-            }
-
-            if (((SuzukiMutex) mutex).hasToken() && !((SuzukiMutex) mutex).usingToken) {
-                ((SuzukiMutex) mutex).setTokenActive(false);
-                TokenMessage tokenMessage = new TokenMessage(AppConfig.myServentInfo, clientMessage.getOriginalSenderInfo(), ((SuzukiMutex) mutex).serventsWaiting);
-                tokenMessage.finishedRequests = ((SuzukiMutex) mutex).finishedRequests;
-                AppConfig.timestampedStandardPrint("Saljem poruku ka " + clientMessage.getOriginalSenderInfo().getId());
-                MessageUtil.sendMessage(tokenMessage);
+            // Ukoliko zahtev nije zastareo
+            if (((SuzukiMutex) mutex).requestsReceived.get(clientMessage.getOriginalSenderInfo().getId()) <= ((RequestTokenMessage) clientMessage).sequenceCounter) {
+                if (((SuzukiMutex) mutex).hasToken() && !((SuzukiMutex) mutex).usingToken) {
+                    ((SuzukiMutex) mutex).setTokenActive(false);
+                    TokenMessage tokenMessage = new TokenMessage(AppConfig.myServentInfo, clientMessage.getOriginalSenderInfo(), ((SuzukiMutex) mutex).serventsWaiting);
+                    tokenMessage.finishedRequests = ((SuzukiMutex) mutex).finishedRequests;
+                    MessageUtil.sendMessage(tokenMessage);
+                }
             }
         }
     }

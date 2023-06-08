@@ -3,6 +3,7 @@ package cli.command;
 import app.AppConfig;
 import mutex.DistributedMutex;
 import mutex.SuzukiMutex;
+import servent.message.BasicMessage;
 
 public class InfoCommand implements CLICommand {
 
@@ -32,6 +33,7 @@ public class InfoCommand implements CLICommand {
 		AppConfig.timestampedStandardPrint(((SuzukiMutex) mutex).finishedRequests + "");
 		AppConfig.timestampedStandardPrint(((SuzukiMutex) mutex).requestsReceived + "");
 		AppConfig.timestampedStandardPrint(AppConfig.serventFiles + "");
+		AppConfig.timestampedStandardPrint(BasicMessage.messageCounter.get() + " ");
 
 	}
 

@@ -2,8 +2,10 @@ package servent.handler;
 
 import app.AppConfig;
 import app.ServentInfo;
+import app.buddySystem.BuddySystem;
 import mutex.DistributedMutex;
 import mutex.SuzukiMutex;
+import servent.message.BasicMessage;
 import servent.message.hello.HelloFromNodeMessage;
 import servent.message.Message;
 import servent.message.MessageType;
@@ -61,21 +63,34 @@ public class HelloFromNodeHandler implements MessageHandler {
                 }
             }
 
+            ((SuzukiMutex) mutex).systemUpdatedMessagesReceived.set(0);
 
             AppConfig.myServentInfo.setId(newId);
             AppConfig.reorganizeArchitecture();
 
-            ((SuzukiMutex) mutex).systemUpdatedMessagesReceived.set(0);
+            BasicMessage.messageCounter.set(SystemUpdatedHandler.maxMessageId);
+            SystemUpdatedHandler.maxMessageId = 0;
 
             AppConfig.serventFiles = ((HelloFromNodeMessage) clientMessage).serventFiles;
             AppConfig.serventFiles.put(newId, new ArrayList<>());
+            // ovo treba da se promeni kod Backup-a
+
 
             ((SuzukiMutex) mutex).finishedRequests = new ArrayList<>(((HelloFromNodeMessage) clientMessage).requestsList);
             ((SuzukiMutex) mutex).requestsReceived = new ArrayList<>(((HelloFromNodeMessage) clientMessage).requestsList);
-            ((SuzukiMutex) mutex).finishedRequests.add(0);
-            ((SuzukiMutex) mutex).requestsReceived.add(0);
+
+            if(((SuzukiMutex) mutex).finishedRequests.size() == newId) {
+                ((SuzukiMutex) mutex).finishedRequests.add(0);
+                ((SuzukiMutex) mutex).requestsReceived.add(0);
+            } else {
+                ((SuzukiMutex) mutex).finishedRequests.set(newId, ((SuzukiMutex) mutex).finishedRequests.get(newId) - 1);
+                ((SuzukiMutex) mutex).requestsReceived.set(newId, ((SuzukiMutex) mutex).requestsReceived.get(newId) - 1);
+            }
 
             AppConfig.timestampedStandardPrint("Svi su me prihvatili! Novi ID mi je " + newId);
+
+            Thread buddySystemThread = new Thread(((SuzukiMutex) mutex).buddySystem);
+            buddySystemThread.start();
 
             mutex.unlock();
         }

@@ -17,6 +17,7 @@ public class SystemUpdatedHandler implements MessageHandler {
 
     private Message clientMessage;
     private final DistributedMutex mutex;
+    public static int maxMessageId = 0;
 
     public SystemUpdatedHandler(Message clientMessage, DistributedMutex mutex) {
         this.clientMessage = clientMessage;
@@ -28,6 +29,9 @@ public class SystemUpdatedHandler implements MessageHandler {
         if(clientMessage.getMessageType() == MessageType.SYSTEM_UPDATED) {
             if (clientMessage.getReceiverInfo().getId() == AppConfig.myServentInfo.getId()) {
                 ((SuzukiMutex) mutex).systemUpdatedMessagesReceived.addAndGet(1);
+            }
+            if(((SystemUpdatedMessage) clientMessage).newNodeMessageId > maxMessageId) {
+                maxMessageId = ((SystemUpdatedMessage)clientMessage).newNodeMessageId;
             }
         } else {
             AppConfig.timestampedErrorPrint("Got message that is not of type System updated");

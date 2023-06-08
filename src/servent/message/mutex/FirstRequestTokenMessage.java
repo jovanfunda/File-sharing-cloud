@@ -1,4 +1,4 @@
-package servent.message.update;
+package servent.message.mutex;
 
 import app.AppConfig;
 import app.ServentInfo;
@@ -6,30 +6,27 @@ import servent.message.BasicMessage;
 import servent.message.Message;
 import servent.message.MessageType;
 
-import java.util.Objects;
+public class FirstRequestTokenMessage extends BasicMessage {
 
-public class SystemUpdatedMessage extends BasicMessage {
-
-    public int newNodeMessageId = -1;
-
-    public SystemUpdatedMessage(ServentInfo originalSenderInfo, ServentInfo receiverInfo) {
-        super(MessageType.SYSTEM_UPDATED, originalSenderInfo, receiverInfo);
+    public FirstRequestTokenMessage(ServentInfo originalSenderInfo, ServentInfo receiverInfo) {
+        super(MessageType.FIRST_REQUEST, originalSenderInfo, receiverInfo);
     }
 
-    public SystemUpdatedMessage(ServentInfo originalSenderInfo, ServentInfo receiverInfo, int messageId) {
-        super(MessageType.SYSTEM_UPDATED, originalSenderInfo, receiverInfo, messageId);
+    public FirstRequestTokenMessage(ServentInfo originalSenderInfo, ServentInfo receiverInfo, int messageId) {
+        super(MessageType.FIRST_REQUEST, originalSenderInfo, receiverInfo, messageId);
     }
 
     @Override
     public Message changeReceiver(Integer newReceiverId) {
         ServentInfo newReceiverInfo = AppConfig.getInfoById(newReceiverId);
 
-        return new SystemUpdatedMessage(getOriginalSenderInfo(), newReceiverInfo, getMessageId());
+        return new FirstRequestTokenMessage(getOriginalSenderInfo(),
+                newReceiverInfo, getMessageId());
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof SystemUpdatedMessage other) {
+        if (obj instanceof FirstRequestTokenMessage other) {
 
             boolean messageId = getMessageId() == other.getMessageId();
             boolean id = getOriginalSenderInfo().getId() == other.getOriginalSenderInfo().getId();
@@ -37,6 +34,7 @@ public class SystemUpdatedMessage extends BasicMessage {
             boolean serventValue = getReceiverInfo().equals(other.getReceiverInfo());
 
             return messageId && id && port && serventValue;
+
         }
 
         return false;

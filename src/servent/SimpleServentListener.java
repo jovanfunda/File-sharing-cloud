@@ -15,8 +15,11 @@ import app.Cancellable;
 import app.ServentInfo;
 import mutex.DistributedMutex;
 import servent.handler.*;
+import servent.handler.buddySystem.PingHandler;
+import servent.handler.buddySystem.PongHandler;
 import servent.handler.file.PullFileHandler;
 import servent.handler.file.SendFileHandler;
+import servent.handler.mutex.FirstRequestTokenHandler;
 import servent.handler.mutex.TokenHandler;
 import servent.handler.mutex.RequestTokenHandler;
 import servent.message.Message;
@@ -31,8 +34,6 @@ public class SimpleServentListener implements Runnable, Cancellable {
 	
 	private DistributedMutex mutex;
 	private int portNumber;
-
-	private static final Set<Message> receivedMessages = Collections.newSetFromMap(new ConcurrentHashMap<Message, Boolean>());
 
 	public SimpleServentListener(int portNumber, DistributedMutex mutex) {
 		this.mutex = mutex;
@@ -65,7 +66,11 @@ public class SimpleServentListener implements Runnable, Cancellable {
 				//GOT A MESSAGE! <3
 				Message clientMessage = MessageUtil.readMessage(clientSocket);
 
-				boolean didPut = receivedMessages.add(clientMessage);
+				boolean didPut = AppConfig.receivedMessages.add(clientMessage);
+
+				if(clientMessage.getMessageType() == MessageType.HELLO_TO_NODE || clientMessage.getMessageType() == MessageType.FIRST_REQUEST || (clientMessage.getOriginalSenderInfo().getId() == -1 && clientMessage.getMessageType() == MessageType.UPDATE_SYSTEM)) {
+					didPut = true;
+				}
 
 				if (didPut) {
 					AppConfig.timestampedStandardPrint("Prihvacena poruka " + clientMessage);
@@ -93,6 +98,9 @@ public class SimpleServentListener implements Runnable, Cancellable {
 						case TOKEN:
 							messageHandler = new TokenHandler(clientMessage, mutex);
 							break;
+						case FIRST_REQUEST:
+							messageHandler = new FirstRequestTokenHandler(clientMessage, mutex);
+							break;
 						case UPDATE_SYSTEM:
 							messageHandler = new UpdateSystemHandler(clientMessage, mutex);
 							break;
@@ -104,6 +112,12 @@ public class SimpleServentListener implements Runnable, Cancellable {
 							break;
 						case SEND_FILE:
 							messageHandler = new SendFileHandler(clientMessage);
+							break;
+						case PING:
+							messageHandler = new PingHandler(clientMessage);
+							break;
+						case PONG:
+							messageHandler = new PongHandler(clientMessage);
 							break;
 					}
 
@@ -124,5 +138,4 @@ public class SimpleServentListener implements Runnable, Cancellable {
 	public void stop() {
 		this.working = false;
 	}
-
 }

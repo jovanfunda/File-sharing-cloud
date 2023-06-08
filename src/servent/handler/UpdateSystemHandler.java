@@ -25,8 +25,10 @@ public class UpdateSystemHandler implements MessageHandler {
     @Override
     public void run() {
         if(clientMessage.getMessageType() == MessageType.UPDATE_SYSTEM) {
-
             if (clientMessage.getReceiverInfo().getId() == AppConfig.myServentInfo.getId()) {
+
+                int newNodeMessageId = -1;
+
                 if (((UpdateSystemMessage) clientMessage).newNodeId != -1) {
                     ServentInfo newServent = new ServentInfo(clientMessage.getOriginalSenderInfo().getIpAddress(),
                             ((UpdateSystemMessage) clientMessage).newNodeId,
@@ -35,9 +37,23 @@ public class UpdateSystemHandler implements MessageHandler {
 
                     AppConfig.addServentInfo(newServent);
                     AppConfig.reorganizeArchitecture();
-                    ((SuzukiMutex) mutex).finishedRequests.add(0);
-                    ((SuzukiMutex) mutex).requestsReceived.add(0);
+
+                    if(((SuzukiMutex) mutex).finishedRequests.size() == ((UpdateSystemMessage) clientMessage).newNodeId) {
+                        ((SuzukiMutex) mutex).finishedRequests.add(0);
+                        ((SuzukiMutex) mutex).requestsReceived.add(0);
+                    } else {
+                        for(Message m : AppConfig.receivedMessages) {
+                            if(m.getOriginalSenderInfo().getId() == ((UpdateSystemMessage) clientMessage).newNodeId) {
+                                if(m.getMessageId() > newNodeMessageId) {
+                                    newNodeMessageId = m.getMessageId();
+                                }
+                            }
+                        }
+                    }
+
                     AppConfig.serventFiles.put(((UpdateSystemMessage) clientMessage).newNodeId, new ArrayList<>());
+                    // ovo treba da se promeni kod Backupa
+
 
                     ((SuzukiMutex) mutex).finishedRequests.set(((UpdateSystemMessage) clientMessage).newNodeId, 1);
                     ((SuzukiMutex) mutex).requestsReceived.set(((UpdateSystemMessage) clientMessage).newNodeId, 1);
@@ -75,9 +91,25 @@ public class UpdateSystemHandler implements MessageHandler {
 
                     int prevFinishedRequest = ((SuzukiMutex) mutex).finishedRequests.get(clientMessage.getOriginalSenderInfo().getId());
                     ((SuzukiMutex) mutex).finishedRequests.set(clientMessage.getOriginalSenderInfo().getId(), prevFinishedRequest + 1);
+                } else if (((UpdateSystemMessage) clientMessage).serventThatFailed != null) {
+
+                    ServentInfo serventThatFailed = ((UpdateSystemMessage) clientMessage).serventThatFailed;
+
+                    AppConfig.serventInfoList.remove(serventThatFailed);
+
+                    AppConfig.reorganizeArchitecture();
+
+                    int prevFinishedRequest = ((SuzukiMutex) mutex).finishedRequests.get(clientMessage.getOriginalSenderInfo().getId());
+                    ((SuzukiMutex) mutex).finishedRequests.set(clientMessage.getOriginalSenderInfo().getId(), prevFinishedRequest + 1);
                 }
 
-                MessageUtil.sendMessage(new SystemUpdatedMessage(AppConfig.myServentInfo, clientMessage.getOriginalSenderInfo()));
+                SystemUpdatedMessage message = new SystemUpdatedMessage(AppConfig.myServentInfo, clientMessage.getOriginalSenderInfo());
+
+                if(newNodeMessageId != -1) {
+                    message.newNodeMessageId = newNodeMessageId;
+                }
+
+                MessageUtil.sendMessage(message);
             }
         } else {
             AppConfig.timestampedErrorPrint("Got message that is not of type Update System");

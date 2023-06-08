@@ -44,6 +44,9 @@ public class HelloFromBootstrapHandler implements MessageHandler {
 
                 AppConfig.timestampedStandardPrint("Primljen sam u arhitekturu kao prvi cvor!");
 
+                Thread buddySystemThread = new Thread(((SuzukiMutex) mutex).buddySystem);
+                buddySystemThread.start();
+
                 mutex.unlock();
 
             } else {

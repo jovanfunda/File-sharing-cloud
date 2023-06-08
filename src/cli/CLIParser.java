@@ -6,6 +6,7 @@ import java.util.Scanner;
 
 import app.AppConfig;
 import app.Cancellable;
+import app.buddySystem.BuddySystem;
 import cli.command.*;
 import cli.command.files.AddFileCommand;
 import cli.command.files.PullFileCommand;
@@ -37,12 +38,12 @@ public class CLIParser implements Runnable, Cancellable {
 	
 	private final List<CLICommand> commandList;
 	
-	public CLIParser(SimpleServentListener listener, DistributedMutex mutex) {
+	public CLIParser(SimpleServentListener listener, BuddySystem buddySystem, DistributedMutex mutex) {
 		this.commandList = new ArrayList<>();
 		
 		commandList.add(new InfoCommand(mutex));
 		commandList.add(new PauseCommand());
-		commandList.add(new StopCommand(this, listener));
+		commandList.add(new StopCommand(this, listener, buddySystem));
 		commandList.add(new FirstCommand());
 		commandList.add(new AddFileCommand(mutex));
 		commandList.add(new RemoveFileCommand(mutex));

@@ -2,6 +2,7 @@ package app;
 
 import java.util.ArrayList;
 
+import app.buddySystem.BuddySystem;
 import cli.CLIParser;
 import mutex.DistributedMutex;
 import mutex.SuzukiMutex;
@@ -38,13 +39,13 @@ public class ServentMain {
 
 		AppConfig.myServentInfo = new ServentInfo(ipAddress, -1, portNumber, new ArrayList<>());
 
-		DistributedMutex mutex = new SuzukiMutex();
+		SuzukiMutex mutex = new SuzukiMutex();
 		
 		SimpleServentListener simpleListener = new SimpleServentListener(portNumber, mutex);
 		Thread listenerThread = new Thread(simpleListener);
 		listenerThread.start();
-		
-		CLIParser cliParser = new CLIParser(simpleListener, mutex);
+
+		CLIParser cliParser = new CLIParser(simpleListener, mutex.buddySystem, mutex);
 		Thread cliThread = new Thread(cliParser);
 		cliThread.start();
 		
