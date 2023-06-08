@@ -1,6 +1,5 @@
 package servent.handler.bootstrap;
 
-import app.AppConfig;
 import app.bootstrap.BootstrapNode;
 import servent.handler.MessageHandler;
 import servent.message.Message;

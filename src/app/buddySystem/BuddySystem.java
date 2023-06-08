@@ -7,6 +7,7 @@ import app.ServentInfo;
 import mutex.DistributedMutex;
 import mutex.SuzukiMutex;
 import servent.message.Message;
+import servent.message.buddySystem.IsHeOKMessage;
 import servent.message.buddySystem.PingMessage;
 import servent.message.update.UpdateSystemMessage;
 import servent.message.util.MessageUtil;
@@ -41,8 +42,8 @@ public class BuddySystem implements Runnable, Cancellable {
                     throw new RuntimeException(e);
                 }
 
-                ServentInfo nextNode = AppConfig.nextNode();
-                MessageUtil.sendMessage(new PingMessage(AppConfig.myServentInfo, AppConfig.nextNode()));
+                ServentInfo nextNode = AppConfig.nextNode(AppConfig.myServentInfo);
+                MessageUtil.sendMessage(new PingMessage(AppConfig.myServentInfo, nextNode));
 
                 try {
                     Thread.sleep(Constants.lower_limit);
@@ -53,8 +54,9 @@ public class BuddySystem implements Runnable, Cancellable {
                     AppConfig.gotPong = false;
                     break;
                 } else {
-                    // saljemo poruku njegovom drugom buddy cvoru jel sve u redu
-                    MessageUtil.sendMessage(new PingMessage(AppConfig.myServentInfo, nextNode));
+                    if(AppConfig.serventInfoList.size() >= 3) {
+                        MessageUtil.sendMessage(new IsHeOKMessage(AppConfig.myServentInfo, AppConfig.nextNode(nextNode)));
+                    }
                     try {
                         Thread.sleep(Constants.upper_limit);
                     } catch (InterruptedException e) {

@@ -16,14 +16,11 @@ public class BootstrapNode {
 
         Constants.appConfig();
 
-        String ipAddress = Constants.bootstrapIP;
-        int portNumber = Constants.bootstrapPort;
+        System.out.println("Starting bootstrap node at port " + Constants.bootstrapPort);
 
-        System.out.println("Starting bootstrap node at port " + portNumber);
+        bootstrapInfo = new ServentInfo(Constants.bootstrapIP, -1, Constants.bootstrapPort, new ArrayList<>());
 
-        bootstrapInfo = new ServentInfo(ipAddress, -1, portNumber, new ArrayList<>());
-
-        BootstrapListener bootstrapListener = new BootstrapListener(portNumber);
+        BootstrapListener bootstrapListener = new BootstrapListener(Constants.bootstrapPort);
         Thread listenerThread = new Thread(bootstrapListener);
         listenerThread.start();
 

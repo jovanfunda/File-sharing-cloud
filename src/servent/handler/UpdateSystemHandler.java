@@ -32,6 +32,9 @@ public class UpdateSystemHandler implements MessageHandler {
                 int newNodeMessageId = -1;
 
                 if (((UpdateSystemMessage) clientMessage).newNodeId != -1) {
+
+                    AppConfig.gotPong = true;
+
                     ServentInfo newServent = new ServentInfo(clientMessage.getOriginalSenderInfo().getIpAddress(),
                             ((UpdateSystemMessage) clientMessage).newNodeId,
                             clientMessage.getOriginalSenderInfo().getListenerPort(),
@@ -94,6 +97,8 @@ public class UpdateSystemHandler implements MessageHandler {
                     int prevFinishedRequest = ((SuzukiMutex) mutex).finishedRequests.get(clientMessage.getOriginalSenderInfo().getId());
                     ((SuzukiMutex) mutex).finishedRequests.set(clientMessage.getOriginalSenderInfo().getId(), prevFinishedRequest + 1);
                 } else if (((UpdateSystemMessage) clientMessage).serventThatFailed != null) {
+
+                    AppConfig.gotPong = true;
 
                     ServentInfo serventThatFailed = ((UpdateSystemMessage) clientMessage).serventThatFailed;
 

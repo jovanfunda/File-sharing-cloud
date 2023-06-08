@@ -103,10 +103,10 @@ public class AppConfig {
 
 	}
 
-	public static ServentInfo nextNode() {
+	public static ServentInfo nextNode(ServentInfo servent) {
 		int id = -1;
 		for(int i = 0; i < serventInfoList.size(); i++) {
-			if(serventInfoList.get(i) == AppConfig.myServentInfo) {
+			if(serventInfoList.get(i) == servent) {
 				id = i;
 				break;
 			}
@@ -116,5 +116,20 @@ public class AppConfig {
 		}
 		int nextNodeId = (id+1) % serventInfoList.size();
 		return serventInfoList.get(nextNodeId);
+	}
+
+	public static ServentInfo previousNode(ServentInfo servent) {
+		int id = -1;
+		for(int i = 0; i < serventInfoList.size(); i++) {
+			if(serventInfoList.get(i) == servent) {
+				id = i;
+				break;
+			}
+		}
+		if(id == -1) {
+			timestampedErrorPrint("Error in previousNode app config");
+		}
+		int previousNodeId = (id-1);
+		return previousNodeId >= 0 ? serventInfoList.get(id-1) : serventInfoList.get(serventInfoList.size()-1);
 	}
 }

@@ -13,8 +13,7 @@ import mutex.DistributedMutex;
 import servent.handler.*;
 import servent.handler.bootstrap.NewNodeToBootstrapHandler;
 import servent.handler.bootstrap.RemoveNodeToBootstrapHandler;
-import servent.handler.buddySystem.PingHandler;
-import servent.handler.buddySystem.PongHandler;
+import servent.handler.buddySystem.*;
 import servent.handler.file.PullFileHandler;
 import servent.handler.file.SendFileHandler;
 import servent.handler.hello.HelloFromBootstrapHandler;
@@ -121,6 +120,21 @@ public class SimpleServentListener implements Runnable, Cancellable {
 							break;
 						case PONG:
 							messageHandler = new PongHandler(clientMessage);
+							break;
+						case ARE_YOU_OK:
+							messageHandler = new AreYouOKHandler(clientMessage);
+							break;
+						case NOT_OK:
+							messageHandler = new HeIsNotOKHandler(clientMessage);
+							break;
+						case HE_IS_OK:
+							messageHandler = new HeIsOKHandler(clientMessage);
+							break;
+						case IS_HE_OK:
+							messageHandler = new IsHeOKHandler(clientMessage);
+							break;
+						case OK:
+							messageHandler = new OKHandler(clientMessage);
 							break;
 					}
 
